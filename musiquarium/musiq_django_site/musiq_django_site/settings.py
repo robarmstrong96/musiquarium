@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = ')u9g)pjhc2)dp-a^2y)w5=i_(8h8!*=x&msmi7id$md^6vl8ar'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,10 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'musiq_site_app.apps.MusiqSiteAppConfig',
+    'library.apps.LibraryConfig',
     'bootstrap4',
-    #'django.contrib.staticfiles',
-
 ]
 
 MIDDLEWARE = [
@@ -53,12 +51,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+print(BASE_DIR.__str__() + '/library/templates')
+
 ROOT_URLCONF = 'musiq_django_site.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR.__str__() + '/templates/',], # <- here
+        'DIRS': [BASE_DIR.__str__() + 'library/templates/'], # <- here
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,13 +125,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/assets/'
 STATICFILES_DIRS = [
-    # BASE_DIR / "static/",
+    BASE_DIR / "assets/",
     #'/var/www/static/', <- for deployment
 ]
+STATIC_ROOT = 'staticfiles'
 
-for subdir, dirs, files in os.walk('static'):
-     for file in files:
-         print((os.path.join(subdir, file)))
-         STATICFILES_DIRS.append((os.path.join(subdir, file)))
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
+#for subdir, dirs, files in os.walk('static'):
+#     for file in files:
+#         print((os.path.join(subdir, file)))
+#         STATICFILES_DIRS.append((os.path.join(subdir, file)))

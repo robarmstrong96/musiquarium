@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-#from django.conf.urls import include
-from django.views.generic import TemplateView
+from django.conf.urls import include
+from django.views.generic import RedirectView
+from django.conf.urls.static import static
+from . import settings
 
 urlpatterns = [
-    #path('', include('musiq_site_app.urls')),
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='base.html')),
-] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('library/', include('library.urls')), # from library app 
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
