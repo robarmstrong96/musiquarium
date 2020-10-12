@@ -121,27 +121,23 @@
                             <table class="table my-0" id="dataTable">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
+                                        <th>Song</th>
+                                        <th>Album</th>
+                                        <th>Artist</th>
+                                        <th>Track #</th>
+                                        <th>Release Date</th>
+                                        <th>Genre</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><img class="rounded-circle mr-2" width="30" height="30" src="/assets/img/avatars/avatar1.jpeg">Airi Satou</td>
-                                        <td>Accountant</td>
-                                        <td>Tokyo</td>
-                                        <td>33</td>
-                                        <td>2008/11/28</td>
-                                        <td>$162,700</td>
-                                    </tr>
-                                    {% for song in songs %}
+                                    {% for song in songs %} <!-- populating table data with currently stored user library information -->
                                       <tr>
-                                        <td><img class="rounded-circle mr-2" width="30" height="30" src="/assets/img/avatars/avatar1.jpeg">Airi Satou</td>
                                         <td>{{ song.title }}</td>
+                                        <td><img class="rounded-circle mr-2" width="30" height="30" src="/assets/img/avatars/avatar1.jpeg">{{ song.album }}</td>
+                                        <td>{{ song.artist }}</td>
+                                        <td>N/A</td>
+                                        <td>N/A</td>
+                                        <td>{{ song.genre }}</td>
                                       </tr>
                                     {% endfor %}
                                 </tbody>
