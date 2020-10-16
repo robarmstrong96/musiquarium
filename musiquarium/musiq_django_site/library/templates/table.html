@@ -20,7 +20,7 @@
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: #eda04f;">
             <div class="container-fluid d-flex flex-column p-0">
                 <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-file-audio"></i></div>
                     <div class="sidebar-brand-text mx-3"><span class="text-lowercase">musiquarium</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
@@ -54,31 +54,15 @@
                                 </div>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">3+</span><i class="fas fa-bell fa-fw"></i></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">1+</span><i class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
                                         <h6 class="dropdown-header">alerts center</h6>
                                         <a class="d-flex align-items-center dropdown-item" href="#">
                                             <div class="mr-3">
                                                 <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
                                             </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a>
-                                        <a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                                <p>$290.29 has been deposited into your account!</p>
-                                            </div>
-                                        </a>
-                                        <a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                                            <div><span class="small text-gray-500">October 2nd, 2020</span>
+                                                <p>Library autoconfiguration finished!</p>
                                             </div>
                                         </a><a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a></div>
                                 </div>
@@ -88,7 +72,7 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Valerie Luna</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/avatar1.jpeg"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">God</span><img class="rounded float-left img-profile" src="{% static 'img/avatars/avatar6.jpeg' %}"></a>
                                     <div
                                         class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
                                         <a
@@ -130,10 +114,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for song in songs %} <!-- populating table data with currently stored user library information -->
-                                      <tr>
+                                    {% for song in page_obj %} <!-- populating table data with currently stored user library information -->
+                                      <tr class="class">
                                         <td>{{ song.title }}</td>
-                                        <td><img class="rounded-circle mr-2" width="30" height="30" src="/assets/img/avatars/avatar1.jpeg">{{ song.album }}</td>
+                                        <td><img class="rounded float-left mr-2" width="30" height="30" src="{% static '/img/default/null.png' %}">{{ song.album }}</td>
                                         <td>{{ song.artist }}</td>
                                         <td>N/A</td>
                                         <td>N/A</td>
@@ -141,33 +125,51 @@
                                       </tr>
                                     {% endfor %}
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td><strong>Name</strong></td>
-                                        <td><strong>Position</strong></td>
-                                        <td><strong>Office</strong></td>
-                                        <td><strong>Age</strong></td>
-                                        <td><strong>Start date</strong></td>
-                                        <td><strong>Salary</strong></td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 align-self-center">
-                                <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite" style="width: 463px;">Showing 1 to 10 of 27</p>
-                            </div>
-                            <div class="col-md-6">
-                                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers" style="height: 58px;">
-                                    <ul class="pagination">
-                                        <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
-                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        <li class="page-item"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
-                                    </ul>
-                                </nav>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 align-self-lg-start">
+                            <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite" style="width: 463px;">Showing 1 to 10 of {{ size }}</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers" style="height: 28px;">
+                              <ul class="pagination justify-content-center pagination-sm">
+                                  {% if page_obj.has_previous %}
+                                    {% if not search %}
+                                      <li class="page-item">
+                                          <a class="page-link" href="{% url 'table' %}?page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
+                                      </li>
+                                    {% else %}
+                                      <li class="page-item">
+                                        <a class="page-link" href="{% url 'table' %}?{{search}}&page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
+                                      </li>
+                                    {% endif %}
+                                  {% else %}
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                    </li>
+                                  {% endif %}
+                                  {% for object in page_obj.paginator.page_range %}
+                                      <li class="page-item"><a class="page-link" href="{% url 'table' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                                  {% endfor %}
+                                  {% if page_obj.has_next %}
+                                    {% if not search %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{% url 'table' %}?page={{ page_obj.next_page_number }}">Next</a>
+                                    </li>
+                                    {% else %}
+                                      <li class="page-item">
+                                        <a class="page-link" href="{% url 'table' %}?{{search}}&page={{ page_obj.next_page_number }}">Next</a>
+                                    </li>
+                                    {% endif %}
+                                  {% else %}
+                                  <li class="page-item disabled">
+                                      <a class="page-link" href="#">Next</a>
+                                  </li>
+                                  {% endif %}
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>

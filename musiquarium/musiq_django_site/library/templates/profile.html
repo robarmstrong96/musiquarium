@@ -18,7 +18,7 @@
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: #eda04f;">
             <div class="container-fluid d-flex flex-column p-0">
                 <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-file-audio"></i></i></div>
                     <div class="sidebar-brand-text mx-3"><span class="text-lowercase">musiquarium</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
@@ -52,33 +52,10 @@
                                 </div>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">3+</span><i class="fas fa-bell fa-fw"></i></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">0</span><i class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
                                         <h6 class="dropdown-header">alerts center</h6>
-                                        <a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a>
-                                        <a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                                <p>$290.29 has been deposited into your account!</p>
-                                            </div>
-                                        </a>
-                                        <a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
-                                            </div>
-                                        </a><a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a></div>
+                                        <a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a></div>
                                 </div>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
@@ -86,7 +63,7 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Valerie Luna</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/avatar6.jpeg"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Valerie Luna</span><img class="border rounded-circle img-profile" src="{% static 'img/avatars/avatar6.jpeg' %}"></a>
                                     <div
                                         class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
                                         <a
@@ -102,7 +79,7 @@
                 <div class="row mb-3">
                     <div class="col-lg-4">
                         <div class="card mb-3">
-                            <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="/assets/img/personal/god.jpeg" width="160" height="160">
+                            <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="{% static 'img/personal/god-new.jpeg' %}" width="160" height="160">
                                 <div class="mb-3"><button class="btn btn-primary btn-sm" type="button" style="background: #eda04f;">Change Photo</button></div>
                             </div>
                         </div>
@@ -176,11 +153,9 @@
             </div>
             <div class="card-group">
                 <div class="card">
-                    <div class="card-body border rounded border-warning shadow">
-                        <h4 class="card-title">Delete Library Info?</h4>
-                        <p class="card-text">By selecting this option, you will be deleting all collected library information associated with musiquarium (this does not include your local media, just musiquarium information)</p><button class="btn btn-primary" type="button"
-                            style="background: #eda04f;">Button</button></div>
-                </div>
+                  <div class="card-body border rounded border-warning shadow" style="width: 500px;text-align: left;margin: 0 auto;float: none;margin-bottom: 10px;margin-top: 10px;">
+                    <h4 class="card-title">Delete Library Info?</h4>
+                    <p class="card-text">By selecting this option, you will be deleting all collected library information associated with musiquarium (this does not include your local media, just musiquarium information)</p><button class="btn btn-primary" type="button" style="background: #eda04f;">Button</button></div>
             </div>
         </div>
         <footer class="bg-white sticky-footer">
@@ -192,7 +167,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="/assets/js/theme.js"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 
 </html>

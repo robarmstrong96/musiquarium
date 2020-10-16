@@ -22,5 +22,5 @@ from . import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('library/', include('library.urls')), # from library app 
+    path('library/', include('library.urls')), # from library app
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
