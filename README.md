@@ -43,20 +43,52 @@ In a linux environment (we'll use ubuntu with the apt package manger as an examp
 apt install python3
 ```
 * pip3
-* VirtualEnv
+* VirtualEnv (might be able to be installed using pip)
 * PostgreSQL (subject to change)
 
-### Installation
+### General Installation Instructions
+##### (This will be automated [to some extent] in the future)
 
 Once again, these instructions are not ready yet (placeholder)
 1. Clone the repo
 ```sh
-git clone ...
+git clone https://github.com/robarmstrong96/musiquarium
 ```
-2. Install packages
+2. Install packages/prerequisites
 3. Setup VirtualEnv
-4. Install python requirements with the 'requirements.txt' file
-5. Profit
+```sh
+python3 -m virtualenv <name_of_temp_venv>
+```
+or
+```sh
+python -m virtualenv <name_of_temp_venv>
+```
+4. Activate previously created virtual environment, i.e.
+```sh
+source <venv_folder>/bin/activate in shell
+```
+5. Install python requirements with the 'requirements.txt' file
+```sh
+pip3 install -r requirements.txt
+```
+or
+```sh
+pip install -r requirements.txt
+```
+6. go to the directory which contains 'manage.py' (this should be in ./musiquarium/musiq_django_site/manage.py if starting from the root git project directory)
+7. in the settings.py file which should be in the musiq_django_site project directory, use https://miniwebtool.com/django-secret-key-generator/ to generate a secret key for django to use when hosting the website. Set 'SECRET_KEY' in settings.py with your newly generated django secret key from the previously mentioned website.
+8. assuming postgresql has been installed correctly, you should run
+```sh
+python3 manage.py makemigrations
+```
+```sh
+python3 manage.py migrate
+```
+and finally
+```sh
+python3 manage.py runserver
+```
+which makes the site viewable on the localhost port 8000, so http://127.0.0.1:8000
 
 <!-- USAGE EXAMPLES -->
 ## Usage
