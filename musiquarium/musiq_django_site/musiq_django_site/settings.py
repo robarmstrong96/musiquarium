@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'library.apps.LibraryConfig',
     'bootstrap4',
     'django_extensions',
+    'notifications',
     #'library.utils.add_songs',
     #'library.utils.test_run',
     #'library.utils.detection_music',

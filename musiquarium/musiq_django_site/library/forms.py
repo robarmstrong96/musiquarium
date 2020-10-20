@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db import models
+from library.models import Profile
 
 class RegistrationForm(UserCreationForm):
 
@@ -13,3 +14,11 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "password1", "password2"]
+
+class DiscogzAPIForm(forms.Form):
+
+    discogz = forms.CharField(max_length=100, help_text="Token", label="Discogs")
+
+    class Meta:
+        model = Profile
+        fields = ["discogz"]
