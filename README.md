@@ -10,7 +10,7 @@
   * [Built With](#built-with)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
+  * [Installation](#general-installation-instructions)
 * [Usage](#usage)
 * [Acknowledgements](#acknowledgements)
 
@@ -93,7 +93,7 @@ which makes the site viewable on the localhost port 8000, so http://127.0.0.1:80
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Not ready yet.
+To test with preset music, change the 'no_metadata_media' folder to 'media' (in the same directory!) and click the organize button on the 'library' page
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
