@@ -24,21 +24,14 @@
                                 <h4 class="text-dark mb-4">create a musiquarium account</h4>
                             </div>
                             <form class="user" method="POST">{% csrf_token %}
-                                <!--div class="form-group row">
+                                <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="id_first_name" placeholder="First Name" name="first_name"></div>
                                     <div class="col-sm-6"><input class="form-control form-control-user" type="text" id="id_last_name" placeholder="Last Name" name="last_name"></div>
                                 </div>
-                                <div class="form-group"><input class="form-control form-control-user" type="email" id="id_email" aria-describedby="emailHelp" placeholder="Email Address" name="username"></div>
+                                <div class="form-group"><input class="form-control form-control-user" type="f" id="id_email" aria-describedby="emailHelp" placeholder="Email Address" name="username"></div>
                                 <div class="form-group row">
-                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="id_password" id="password1" placeholder="Password" name="password"></div>
-                                    <div class="col-sm-6"><input class="form-control form-control-user" type="password" id="id_password2" placeholder="Repeat Password" name="password_repeat"></div-->
-
-                                {% for field in form %}
-                                  <div class="form-group">
-                                      <div label="form-group column">{{ field }}</div>
-                                      <div class="col-sm-6 mb-3 mb-sm-0">{{ field.label_tag }}</div>
-                                  </div>
-                                {% endfor %}
+                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="password" id="id_password1" placeholder="Password" name="password1"></div>
+                                    <div class="col-sm-6"><input class="form-control form-control-user" type="password" id="id_password2" placeholder="Repeat Password" name="password2"></div>
                                 </div><button class="btn btn-primary btn-block text-white btn-user" type="submit">Register Account</button>
                                 <hr>
                                 <hr>

@@ -1,7 +1,8 @@
-import os, sys, psycopg2, logging, _thread
+import os, sys, psycopg2, logging, _thread, json
 from threading import Thread, Lock
 from django import forms
 from django.db import connection
+from django.http import JsonResponse
 from library.models import Song
 from library.test_run import testrun # relative import
 from django.views.generic import ListView
@@ -11,10 +12,10 @@ from django.contrib import auth
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from .forms import RegistrationForm, DiscogzAPIForm
+from .forms import RegistrationForm, DiscogzAPIForm, ImageUploadForm, BulkInitilization
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, HttpResponse
-from library.detection_music import discogz_personal_client, discogz_data_retrieval, musicbrainz_detect, discogz_client_authorization, discogz_get_client
+from library.detection_music import discogz_personal_client, discogz_data_retrieval, musicbrainz_retrieval, discogz_client_authorization, discogz_get_client, Detection, Database
 
 logger = logging.getLogger("mylogger")
 
@@ -29,18 +30,51 @@ user_agent = 'musiquarium/0.1'
 @login_required(login_url='/library/login_user')
 def index(request):
     """View function for home page of site."""
-    logger.info(f" Type = {request.method}")
-    return render(request, 'index.html')
+
+    # Checks to see if user has any detected media already. If so, user is
+    # prompted to start the initial bulk library import process.
+    if Song.objects.filter(profile=request.user.profile).count() <= 0:
+        init_import = True
+        logger.info(request.POST)
+    else:
+        init_import = False
+
+    return render(request, 'index.html', {'profile': request.user.profile,
+    'init_import': init_import})
 
 @login_required(login_url='/library/login_user')
 def profile(request):
     """ profile html request """
 
-    # returns profile
-    if request.method == 'POST':
+    # avatar image filename
+    avatar_file = (f"{request.user.first_name}_{request.user.last_name}_{request.user.email}")
+
+    # updates profile information (i.e. email, password)
+    if request.method == 'POST' and 'username' in request.POST:
+        update_user_profile(request)
+
+    # updates api information(maybe? might not need)
+    if request.method == 'POST' and 'discogz' in request.POST:
         form = update_profile(request) # Updates profile model, returns form with updated data
     else:
         form = DiscogzAPIForm()
+
+    # sets profile avatar image
+    if request.method == 'POST':
+       upload_form = ImageUploadForm(request.POST, request.FILES)
+       if upload_form.is_valid():
+           if 'avatar' in request.FILES:
+                image = request.FILES.get('avatar')
+                request.user.profile.set_image_path(image.__str__())
+                request.user.profile.save()
+           upload_form.save()
+           logger.info(f"success in file upload: {upload_form}")
+       else:
+           logger.error(f"error: {upload_form.errors}")
+    else:
+        upload_form = ImageUploadForm()
+
+    logger.info(request.user.profile.avatar)
 
     # generate client api key
     # if request.method == 'POST' and 'authenticate' in request.POST:
@@ -49,40 +83,31 @@ def profile(request):
         #discogz_client_authorization(client, request.user.profile)
         #return HttpResponseRedirect(url)
 
-    return render(request, 'profile.html', {'form': form, 'profile': request.user.profile})
+    return render(request, 'profile.html', {'form': form,
+    'upload_form': upload_form, 'profile': request.user.profile})
 
 @login_required(login_url='/library/login_user')
 def table(request):
     """ table html request """
-    #testrun()
-    song_list = Song.objects.all()
-    page_number = request.GET.get('page', 1) # parses url GET for page
-    paginator = Paginator(song_list, 10)
-    try:
-        page_obj = paginator.page(page_number)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
-
+    song_list = Song.objects.filter(profile=request.user.profile)
     if request.method == "POST" and 'organize' in request.POST:
-        detect = PopulateThreading(request.user)
+        detect = BulkImport(request.user)
         detect.daemon = True
         detect.start()
         #list = testrun()
         #logger.info("Starting data retrieval..")
-        #musicbrainz_detect(list, request.user)
+        #musicbrainz_retrieval(list, Detection.MUSICBRAINZS, request.user)
 
-    return render(request, 'table.html', {'page_obj': page_obj, 'size': song_list.count(), 'profile': request.user.profile})
+    return render(request, 'table.html', {'page_obj': song_list,
+    'size': song_list.count(), 'profile': request.user.profile})
 
 def login_user(request):
     """ login html request """
-    # returns profile if unsucessful
-
     logger.info(request.method)
     if request.method == "POST":
         logger.info(request.method)
-        user = authenticate(username=request.POST.get('email'), password=request.POST.get('password'))
+        user = authenticate(username=request.POST.get('email'),
+        password=request.POST.get('password'))
         if user is not None:
             login(request, user)
             return render(request, 'index.html')
@@ -90,14 +115,9 @@ def login_user(request):
 
 def register(request):
     """ register html request """
-    logger.info(f'request: {request.method}')
     if request.method == 'POST':
-        logger.info(" Successful, it was get! ")
         form = RegistrationForm(request.POST)
-        logger.info(f"\'{form}\' form info ")
-        logger.info(f"{form.is_valid()} form info\n")
         if form.is_valid():
-            logger.info(" Successful, form is valid! ")
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
             user.save()
@@ -120,9 +140,12 @@ def register(request):
 
 def logout(request):
     auth.logout(request)
-    return render(request, 'login_user.html')
+    return redirect('login_user')
 
-class PopulateThreading(Thread):
+class BulkImport(Thread):
+    '''
+        Thread for bulk matching and detecting functionality.
+    '''
 
     def __init__(self, user):
         Thread.__init__(self)
@@ -135,8 +158,7 @@ class PopulateThreading(Thread):
                 #client = discogz_personal_client()
                 list = testrun()
                 logger.info("created list...")
-                logger.info(f"List size: {list} Starting data retrieval..")
-                musicbrainz_detect(list, user)
+                musicbrainz_retrieval(list, Detection.MUSICBRAINZS, user)
                 #discogz_data_retrieval(list, client)
             except:
                 logger.error(sys.exc_info()[0])
@@ -144,16 +166,10 @@ class PopulateThreading(Thread):
                 logger.info("Finished thread!")
                 return True
 
-def drop_table():
-    cursor = connection.cursor()
-    table_name = Album._meta.db_table
-    psql = "DROP TABLE %s CASCADE;" % (table_name, )
-    cursor.execute(psql)
-
-    # # returns profile
-    # return render(request, 'table.html', {'songs': Song.objects.all()})
-
 def update_profile(request):
+    '''
+        Function for adding discogs user information.
+    '''
     profile = request.user.profile
     form = DiscogzAPIForm(request.POST or None)
     if form.is_valid():
@@ -163,14 +179,16 @@ def update_profile(request):
 
     return form
 
-def upload_image(request):
-    from django.core.files.storage import FileSystemStorage
-    if request.method == 'POST' and request.FILES['avatar']:
-        myfile = request.FILES['avatar']
-        fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        uploaded_image_url = fs.url(filename)
-        return render(request, 'profile.html', {
-            'uploaded_image_url': uploaded_image_url
-        })
-    return render(request, 'profile.html')
+def update_user_profile(request):
+    profile = request.user.profile
+    if 'email' in request.POST:
+        logger.info('email' in request.POST)
+        request.user.email = request.POST['email']
+    if 'first_name' in request.POST:
+        logger.info('first_name' in request.POST)
+        request.user.first_name = request.POST['first_name']
+    if 'last_name' in request.POST:
+        logger.info('last_name' in request.POST)
+        request.user.last_name = request.POST['last_name']
+    request.user.profile.save()
+    request.user.save()

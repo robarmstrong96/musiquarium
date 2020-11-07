@@ -10,9 +10,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Table - musiquarium</title>
     <meta name="description" content="a site for organizing your collection of music.">
+    {% block css %}
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <!--link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    {% endblock %}
 </head>
 
 <body id="page-top">
@@ -25,7 +32,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                  <li class="nav-item"><a class="nav-link" href="{% url 'index' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                  <li class="nav-item"><a class="nav-link" href="{% url 'index' %}"><i class="fas fa-cogs"></i><span>Dashboard</span></a></li>
                   <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                   <li class="nav-item"><a class="nav-link active" href="{% url 'table' %}"><i class="fas fa-table"></i><span>Library</span></a></li>
                   <li class="nav-item"><a class="nav-link" href="{% url 'login_user' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
@@ -61,6 +68,11 @@
                                             <div class="mr-3">
                                                 <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
                                             </div>
+                                              {% if messages %}
+                                                  {% for message in messages %}
+                                                    <script>M.toast({html: "{{message}}", classes: 'blue rounded', displayLength:2000});</script>
+                                                  {% endfor %}
+                                              {% endif %}
                                             <div><span class="small text-gray-500">October 2nd, 2020</span>
                                                 <p>Library autoconfiguration finished!</p>
                                             </div>
@@ -72,12 +84,12 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile }}</span><img class="rounded float-left img-profile" src="{% static 'img/default/avatar_male.png' %}"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile }}</span><img class="rounded float-left img-profile" src="{{ profile.avatar }}"></a>
                                     <div
                                         class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
                                         <a
                                             class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a>
-                                            <div class="dropdown-divider" type="POST"></div><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
+                                            <div class="dropdown-divider"></div><a method="POST" class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
                     </div>
                     </li>
                     </ul>
@@ -89,107 +101,67 @@
                     <div class="card-header py-3">
                         <p class="text-primary m-0 font-weight-bold">Library View</p>
                     </div>
-                    <div class="card-body" style="height: 891px;">
-                        <div class="row">
-                            <div class="col-md-6 col-xl-3 text-nowrap">
-                                <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><label>Show&nbsp;<select class="form-control form-control-sm custom-select custom-select-sm"><option value="10" selected="">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select>&nbsp;</label></div>
-                            </div>
-                            <div class="col-md-6 col-xl-3">
-                                <div class="text-md-right dataTables_filter" id="dataTable_filter"><label style="width: 222px;"><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" style="text-align: left;"></label></div>
-                            </div>
-                            <div class="col">
-                                <div></div>
-                            </div>
-                        </div>
-                        <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
-                            <table class="table my-0" id="dataTable">
+                    <div class="card-body" style="width:100%, height:20rem"> <!-- 1012px -->
+                        <div class="table-responsive display table mt-2 table-hover dt-responsive" id="dataTable_div" role="grid" >
+                            <table class="table display nowrap my-0 dt-responsive table-hover" id="dataTable" style="width:100%">
                                 <thead>
-                                    <tr>
-                                        <th>Song</th>
-                                        <th>Album</th>
-                                        <th>Artist</th>
-                                        <th>Track #</th>
-                                        <th>Added Date</th>
-                                        <th>Genre</th>
-                                    </tr>
+                                  <tr>
+                                    <th scope="col">Artist</th>
+                                    <th scope="col">Album</th>
+                                    <th scope="col">Song</th>
+                                    <th scope="col">Release Date</th>
+                                    <th scope="col">Genre</th>
+                                    <th scope="col">Album Art</th>
+                                  </tr>
                                 </thead>
                                 <tbody>
-                                    {% for song in page_obj %} <!-- populating table data with currently stored user library information -->
-                                      <tr class="class">
-                                        <td>{{ song.title }}</td>
-                                        <td><img class="rounded float-left mr-2" width="30" height="30" src="{% static '/img/default/null.png' %}">{{ song.album }}</td>
-                                        <td>{{ song.artist }}</td>
-                                        <td>{{ song.track_number }}</td>
-                                        <td>{{ song.release_date }}</td>
-                                        <td>{{ song.genre }}</td>
-                                      </tr>
-                                    {% endfor %}
+                                  {% for song in page_obj %} <!-- populating table data with currently stored user library information -->
+                                    <tr scope="row">
+                                      <td style="vertical-align: middle">{{ song.artist }}</td>
+                                      <td style="vertical-align: middle">{{ song.album }}</td>
+                                      <td style="vertical-align: middle">{{ song.title }}</td>
+                                      <td style="vertical-align: middle">{{ song.release_date }}</td>
+                                      <td style="vertical-align: middle">{{ song.genre }}</td>
+                                      <td><img class="rounded float-left center" width="64" height="64" src=" {{ song.album_artwork }} "></td>
+                                    </tr>
+                                  {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                        <form method='POST'>
-                          <div class="form text-center"><p>Placeholder button. To organize music, click the button below.</p>
-                            {% csrf_token %}
-                            <button class="btn btn-primary" type="submit" name="organize" style="background: #eda04f;">Organize</button></div>
-                        </form>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-6 align-self-lg-start">
-                            <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite" style="width: 463px;">Showing 1 to 10 of {{ size }}</p>
+                    <div class="card-footer py-3 text-muted">
+                      <div class="row">
+                        <div class="col text-middle">
+                          <form method='POST'>
+                            <div class="form text-center"><p>Placeholder button. To organize music, click the button below.</p>
+                              {% csrf_token %}
+                              <button class="btn btn-primary" type="submit" name="organize" style="background: #eda04f;">Organize</button></div>
+                          </form>
                         </div>
-                        <div class="col-lg-6">
-                            <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers" style="height: 28px;">
-                              <ul class="pagination justify-content-center pagination-sm">
-                                  {% if page_obj.has_previous %}
-                                    {% if not search %}
-                                      <li class="page-item">
-                                          <a class="page-link" href="{% url 'table' %}?page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
-                                      </li>
-                                    {% else %}
-                                      <li class="page-item">
-                                        <a class="page-link" href="{% url 'table' %}?{{search}}&page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
-                                      </li>
-                                    {% endif %}
-                                  {% else %}
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                    </li>
-                                  {% endif %}
-                                  {% for object in page_obj.paginator.page_range %}
-                                      <li class="page-item"><a class="page-link" href="{% url 'table' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
-                                  {% endfor %}
-                                  {% if page_obj.has_next %}
-                                    {% if not search %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="{% url 'table' %}?page={{ page_obj.next_page_number }}">Next</a>
-                                    </li>
-                                    {% else %}
-                                      <li class="page-item">
-                                        <a class="page-link" href="{% url 'table' %}?{{search}}&page={{ page_obj.next_page_number }}">Next</a>
-                                    </li>
-                                    {% endif %}
-                                  {% else %}
-                                  <li class="page-item disabled">
-                                      <a class="page-link" href="#">Next</a>
-                                  </li>
-                                  {% endif %}
-                                </ul>
-                            </nav>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <footer class="bg-white sticky-footer">
-            <div class="container my-auto">
-                <div class="text-center my-auto copyright"><span>Copyright © musiquarium 2020</span></div>
-            </div>
+          <div class="container my-auto">
+            <div class="text-center my-auto copyright"><span>Copyright © musiquarium 2020</span></div>
+          </div>
         </footer>
-    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="{% static 'js/theme.js' %}"></script>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
+        {% block js %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+        <script src"https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script>
+        <script src="{% static 'js/theme.js' %}"></script>
+        <script src="{% static 'js/table.js' %}"></script>
+        <!--script src="{% static 'js/mindmup-editabletable.js' %}"></script-->
+        {% endblock %}
+
 </body>
 
 </html>

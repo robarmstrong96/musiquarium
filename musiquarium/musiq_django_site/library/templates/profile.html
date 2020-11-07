@@ -23,7 +23,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}"><i class="fas fa-cogs"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'table' %}"><i class="fas fa-table"></i><span>Library</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'login_user' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
@@ -63,12 +63,12 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile.user.username }}</span><img class="rounded float-left img-profile" src="{% static 'img/default/avatar_male.png' %}"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile.user.username }}</span><img class="rounded float-left img-profile" src="{{ profile.avatar }}"></a>
                                     <div
                                         class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
                                         <a
                                             class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a>
-                                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
+                                            <div class="dropdown-divider"></div><a method="POST" class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
                     </div>
                     </li>
                     </ul>
@@ -79,43 +79,42 @@
                 <div class="row mb-3">
                     <div class="col-lg-4">
                         <div class="card mb-3">
-                            <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="../assets/img/default/avatar_male.png" width="160" height="160">
-                                <div class="mb-3"><button class="btn btn-primary btn-sm" type="button" style="background: #eda04f;">Change Photo</button></div>
+                            <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="{{ profile.avatar }}" width="160" height="160">
+                                <div class="mb-3">
+                                    {% csrf_token %}
+                                      <!-- Button trigger modal -->
+                                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="background: #eda04f;">Change Profile Picture</button>
+                                      <!-- Modal -->
+                                      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title" id="exampleModalLabel">Change Profile Picture</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                            </div>
+                                            <form method="POST" id="file-upload" enctype="multipart/form-data" novalidate=""> {% csrf_token %}
+                                              <div class="modal-body">
+                                                <div class="file-loading">
+                                                      {{ upload_form.as_p }}
+                                                </div>
+                                                <div id="kartik-file-errors"></div>
+                                              </div>
+                                              <div class="modal-footer">
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                  <button type="submit" class="btn btn-primary" value="Upload" style="background: #eda04f;">Save</button>
+                                              </div>
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
                             </div>
                         </div>
                         <div class="card shadow mb-4"></div>
                     </div>
                     <div class="col-lg-8 col-xl-8">
-                        <div class="row mb-3 d-none">
-                            <div class="col">
-                                <div class="card text-white bg-primary shadow">
-                                    <div class="card-body">
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="m-0">Peformance</p>
-                                                <p class="m-0"><strong>65.2%</strong></p>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                        </div>
-                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card text-white bg-success shadow">
-                                    <div class="card-body">
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="m-0">Peformance</p>
-                                                <p class="m-0"><strong>65.2%</strong></p>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                        </div>
-                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col-xl-12 offset-xl-0">
                                 <div class="card shadow mb-3">
@@ -123,11 +122,12 @@
                                         <p class="text-primary m-0 font-weight-bold">User Information</p>
                                     </div>
                                     <div class="card-body">
-                                        <form>
+                                        <form method="POST">
+                                        {% csrf_token %}
                                             <div class="form-row">
-                                                <div class="col">
+                                                <!--div class="col">
                                                     <div class="form-group"><label for="username"><strong>Username</strong></label><input class="form-control" type="text" placeholder="{{ profile.user.username }}" name="username"></div>
-                                                </div>
+                                                </div-->
                                                 <div class="col">
                                                     <div class="form-group"><label for="email"><strong>Email Address</strong></label><input class="form-control" type="email" placeholder="{{ profile.user.email }}" name="email"></div>
                                                 </div>
@@ -141,6 +141,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group"><button class="btn btn-primary btn-sm" type="submit" style="background: #eda04f;">Save Settings</button></div>
+                                        {% csrf_token %}
                                         </form>
                                     </div>
                                 </div>
@@ -151,27 +152,29 @@
                 </div>
                 <div class="card shadow mb-5"></div>
             </div>
-            <div class="card-group">
-                <div class="card">
-                  <div class="card-body border rounded border-warning shadow" style="width: 500px;text-align: left;margin: 0 auto;float: none;margin-bottom: 10px;margin-top: 10px;">
-                    <h4 class="card-title">Delete Library Info?</h4>
-                    <p class="card-text">By selecting this option, you will be deleting all collected library information associated with musiquarium (this does not include your local media, just musiquarium information)</p><button class="btn btn-primary" type="button" style="background: #eda04f;">Button</button>
-                  </div>
-                  <div class="card-body border rounded border-warning shadow" style="width: 500px;text-align: left;margin: 0 auto;float: none;margin-bottom: 10px;margin-top: 10px;">
-                    <h4 class="card-title">API Key(s)</h4>
-                    <form class="card" method="POST">
-                      {% for field in form %}{% csrf_token %}
-                        <div class="form text-center">
-                            <div label="form">{{ field.label }} {{ field }}<button class="btn btn-primary" type="submit" style="background: #eda04f;">Submit</button></form></div>
+            <div class="card-group" >
+                <div class="card" style="width:100rem;float: none;margin: 0 auto">
+                  <div class="row">
+                    <div class="card-body border rounded border-warning shadow col"  style="width:10rem;text-align: left;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
+                      <h4 class="card-title">Delete Library Info?</h4>
+                      <p class="card-text">By selecting this option, you will be deleting all collected library information associated with musiquarium (this does not include your local media, just musiquarium information)</p><button class="btn btn-primary" type="button" style="background: #eda04f;">Button</button>
+                    </div>
+                    <div class="card-body border rounded border-warning shadow col" style="width:10rem;text-align: left;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
+                      <h4 class="card-title">API Key(s)</h4>
+                      <form class="card" method="POST">
+                        {% for field in form %}{% csrf_token %}
+                          <div class="form text-center">
+                              <div label="form">{{ field.label }} {{ field }}<button class="btn btn-primary" type="submit" style="background: #eda04f;">Submit</button></form></div>
+                          </div>
+                          <div class="form text-center"><p>Current {{ field.label }} API Key: "{{ profile.discogz }}"</p></div>
+                          <form method='POST'>
+                            <div class="form text-center"><p>To Generate an API key, click the button below.</p>
+                              {% csrf_token %}
+                              <button class="btn btn-primary" type="submit" name="authenticate" style="background: #eda04f;">Generate</button></div>
+                          </form>
                         </div>
-                        <div class="form text-center"><p>Current {{ field.label }} API Key: "{{ profile.discogz }}"</p></div>
-                        <form method='POST'>
-                          <div class="form text-center"><p>To Generate an API key, click the button below.</p>
-                            {% csrf_token %}
-                            <button class="btn btn-primary" type="submit" name="authenticate" style="background: #eda04f;">Generate</button></div>
-                        </form>
-                      </div>
-                      {% endfor %}
+                        {% endfor %}
+                    </div>
                   </div>
                 </div>
         <footer class="bg-white sticky-footer">
@@ -184,6 +187,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="{% static 'js/theme.js' %}"></script>
+    <script src="{% static 'js/profile_img_upload.js' %}"></script>
 </body>
 
 </html>

@@ -1,0 +1,106 @@
+{
+    "recording": {
+        "id": "3c783358-63a6-4c9a-b713-62b9979dc8be",
+        "title": "The Usual Mr. Nordin",
+        "length": "257000",
+        "release-list": [
+            {
+                "id": "bc3bed85-7657-48eb-9c15-e4705fdf1d3d",
+                "title": "Blamer EP",
+                "status": "Official",
+                "quality": "normal",
+                "packaging": "None",
+                "text-representation": {
+                    "language": "eng",
+                    "script": "Latn"
+                },
+                "date": "2012-12-03",
+                "country": "XW",
+                "release-event-list": [
+                    {
+                        "date": "2012-12-03",
+                        "area": {
+                            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+                            "name": "[Worldwide]",
+                            "sort-name": "[Worldwide]",
+                            "iso-3166-1-code-list": [
+                                "XW"
+                            ]
+                        }
+                    }
+                ],
+                "release-event-count": 1,
+                "barcode": "",
+                "medium-list": [
+                    {
+                        "position": "1",
+                        "format": "Digital Media",
+                        "disc-list": [],
+                        "disc-count": 0,
+                        "track-list": [
+                            {
+                                "id": "06997a94-904f-454a-aa7c-a744bc750641",
+                                "position": "3",
+                                "number": "3",
+                                "title": "The Usual Mr. Nordin",
+                                "length": "257000",
+                                "track_or_recording_length": "257000"
+                            }
+                        ],
+                        "track-count": 6
+                    }
+                ],
+                "medium-count": 1
+            },
+            {
+                "id": "9e89463c-ca70-444a-9fb3-2687c3e83246",
+                "title": "Blamer EP",
+                "status": "Official",
+                "quality": "normal",
+                "packaging": "None",
+                "text-representation": {
+                    "language": "eng",
+                    "script": "Latn"
+                },
+                "date": "2015-10-09",
+                "country": "XW",
+                "release-event-list": [
+                    {
+                        "date": "2015-10-09",
+                        "area": {
+                            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+                            "name": "[Worldwide]",
+                            "sort-name": "[Worldwide]",
+                            "iso-3166-1-code-list": [
+                                "XW"
+                            ]
+                        }
+                    }
+                ],
+                "release-event-count": 1,
+                "barcode": "060270167520",
+                "medium-list": [
+                    {
+                        "position": "1",
+                        "format": "Digital Media",
+                        "disc-list": [],
+                        "disc-count": 0,
+                        "track-list": [
+                            {
+                                "id": "cf2c2dc5-15e9-4f35-ba08-e58bf5762e14",
+                                "position": "3",
+                                "number": "3",
+                                "title": "The Usual Mr. Nordin",
+                                "length": "257000",
+                                "track_or_recording_length": "257000"
+                            }
+                        ],
+                        "track-count": 6
+                    }
+                ],
+                "medium-count": 1
+            }
+        ],
+        "release-count": 2
+    }
+}

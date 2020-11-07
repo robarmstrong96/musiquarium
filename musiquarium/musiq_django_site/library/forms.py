@@ -22,3 +22,29 @@ class DiscogzAPIForm(forms.Form):
     class Meta:
         model = Profile
         fields = ["discogz"]
+
+class ImageUploadForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('avatar',)
+
+class BulkInitilization(forms.Form):
+
+    DETECTION=[
+        ('MUSICBRAINZ', 'MusicBrainz'),
+        ('ACRCLOUD', 'Arcloud'),
+        ('METADATA', 'Metadata'),
+    ]
+
+    DATABASE=[
+        ('MUSICBRAINZ', 'MusicBrainz'),
+        ('DISCOGS', 'Discogs'),
+    ]
+
+    detection = forms.CharField(widget=forms.Select(choices=DETECTION))
+    database = forms.CharField(widget=forms.Select(choices=DATABASE))
+
+    class Meta:
+        model = Profile
+        fields = ["user_music_location"]

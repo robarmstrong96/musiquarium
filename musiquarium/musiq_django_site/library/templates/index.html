@@ -23,7 +23,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}"><i class="fas fa-cogs"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'table' %}"><i class="fas fa-table"></i><span>Library</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'login_user' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
@@ -63,52 +63,112 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.username }}</span><img class="rounded float-left img-profile" src="{% static 'img/default/avatar_male.png' %}"></a> <!--/assets/img/avatars/avatar1.jpeg-->
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.username }}</span><img class="rounded float-left img-profile" src="{{ profile.avatar }}"></a>
                                     <div
                                         class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
-                                        <a
-                                            class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a>
-                                            <div class="dropdown-divider"></div><a class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
+                                        <a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a>
+                                            <div class="dropdown-divider"></div><a method="POST" class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    </li>
-                    </ul>
-            </div>
-            </nav>
-            <div class="container-fluid">
-              <div class="card">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs">
-                        <li class="nav-item"><a class="nav-link active" href="#">Default Library Settings</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">next step...</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">last step...</a></li>
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <h4 class="card-title">Default Library Settings</h4>
-                    <p class="card-text"> ba da bing ba da boom. </p>
-                    <div class="card-group">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Recognition Method</h4>
-                                <p class="card-text">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
-                                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" style="background: #eda04f;">Dropdown </button>
-                                    <div class="dropdown-menu"><a class="dropdown-item" href="#">Metadata Recogniton</a><a class="dropdown-item" href="#">Audio Fingerprinting</a></div>
+                </nav>
+            {% if init_import %}
+            <form method="POST">
+            {% csrf_token %}
+              <div class="container-fluid">
+                <div class="card">
+                  <div class="card-header">
+                      <ul class="nav nav-tabs card-header-tabs">
+                          <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#home">Default Library Settings</a></li>
+                          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu1"> Music File Directory </a></li>
+                          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu2"> Final Step </a></li>
+                      </ul>
+                  </div>
+                  <div class="tab-content">
+                    <!-- First Tab -->
+
+                    <div class="card-body tab-pane container active" id="home">
+                        <h4 class="card-title text-center">Default Library Settings</h4>
+                        <p class="card-text text-center"> Set the default matching method and metadata source for your music library. </p>
+                        <div class="card-group">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title text-center">Music Collection Matching Method</h4>
+                                    <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
+                                    <div class="dropdown text-center" ><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" style="background: #eda04f;">Dropdown </button>
+                                      <div class="form-row">
+                                        <div class="dropdown-menu" id="recognition" name="recognition">
+                                          <h6 class="dropdown-header">Matching through metadata recognition</h6>
+                                            <option class="dropdown-item disabled" href="#" type="button">Metadata Recogniton</option>
+                                          <div class="dropdown-divider"></div>
+                                          <h6 class="dropdown-header">Matching through audio fingerprinting</h6>
+                                            <option class="dropdown-item" href="#" type="button" value="MusicBrainz" name="MusicBrainz">MusicBrainz</option>
+                                            <option class="dropdown-item" href="#" value="ARCloud">ARCloud</option>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-center">Music Data Source</h4>
+                                    <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
+                                    <div class="dropdown text-center"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" style="background: #eda04f;">Dropdown </button>
+                                        <div class="dropdown-menu" id="metadata" name="metadata">
+                                          <a class="dropdown-item" href="#">MusicBrainz</a>
+                                          <a class="dropdown-item disabled" href="#">Discogs</a></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Music Data Source</h4>
-                                <p class="card-text">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
-                                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" style="background: #eda04f;">Dropdown </button>
-                                    <div class="dropdown-menu"><a class="dropdown-item" href="#">MusicBrainz</a><a class="dropdown-item" href="#">Discogs</a><a class="dropdown-item" href="#">to be continued...</a></div>
+                    </div>
+
+                    <!-- Second Tab -->
+
+                    <div class="card-body tab-pane container fade" id="menu1">
+                        <h4 class="card-title text-center">Default Library Settings</h4>
+                        <p class="card-text text-center"> Set the location of your music collection. </p>
+                        <div class="card-group">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title text-center"> Music File Location </h4>
+                                    <p class="card-text text-center">Here you will select the location where your media library location is located so that musiquarium may scan and build your library.</p>
+                                    <div class="text-center">
+                                      <input type="file" id="files" name="files" webkitdirectory directory multiple/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Last Tab -->
+
+                    <div class="card-body tab-pane container fade" id="menu2">
+                        <h4 class="card-title text-center">Default Library Settings</h4>
+                        <p class="card-text text-center"> Begin the initialization process </p>
+                        <div class="card-group">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title text-center text-center"> Initialization </h4>
+                                    <p class="card-text text-center text-center">Press the button below to start the Initialization process.</p>
+                                    <div class="text-center">
+                                      <button class="btn btn-primary" type="submit" name="initialize" style="background: #eda04f;">Organize</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+
+                    <!-- Last Tab -->
+
+                  </div>
                 </div>
-              </div>
-            </div>
+              </form>
+            {% else %}
+              <p> Set the location of your music collection. </p>
+            {% endif %}
         </div>
         <footer class="bg-white sticky-footer">
             <div class="container my-auto">

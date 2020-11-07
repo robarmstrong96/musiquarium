@@ -1,0 +1,173 @@
+{
+    "recording": {
+        "id": "5388ad8f-6341-4a4e-9509-fb89d18dedb1",
+        "title": "Mind of a Beast",
+        "length": "256000",
+        "release-list": [
+            {
+                "id": "1b6379fb-8b83-4d07-9375-854cc90ea1b3",
+                "title": "Love Death Immortality",
+                "status": "Official",
+                "quality": "normal",
+                "packaging": "Digipak",
+                "text-representation": {
+                    "language": "eng",
+                    "script": "Latn"
+                },
+                "date": "2014-02-11",
+                "country": "US",
+                "release-event-list": [
+                    {
+                        "date": "2014-02-11",
+                        "area": {
+                            "id": "489ce91b-6658-3307-9877-795b68554c98",
+                            "name": "United States",
+                            "sort-name": "United States",
+                            "iso-3166-1-code-list": [
+                                "US"
+                            ]
+                        }
+                    }
+                ],
+                "release-event-count": 1,
+                "barcode": "885686932001",
+                "medium-list": [
+                    {
+                        "position": "1",
+                        "format": "CD",
+                        "disc-list": [
+                            {
+                                "id": "cNfc6TELya.5IcKA.bR3bEPrXMw-",
+                                "sectors": "231471",
+                                "offset-list": [
+                                    150,
+                                    19575,
+                                    43450,
+                                    69735,
+                                    90918,
+                                    113169,
+                                    139386,
+                                    167150,
+                                    188845,
+                                    211225
+                                ],
+                                "offset-count": 10
+                            }
+                        ],
+                        "disc-count": 1,
+                        "track-list": [
+                            {
+                                "id": "2f84df35-ee77-4886-9a32-17dce165ba1c",
+                                "position": "1",
+                                "number": "1",
+                                "title": "Mind of a Beast",
+                                "length": "259000",
+                                "track_or_recording_length": "259000"
+                            }
+                        ],
+                        "track-count": 10
+                    }
+                ],
+                "medium-count": 1,
+                "tag-list": [
+                    {
+                        "count": "1",
+                        "name": "drum and bass"
+                    },
+                    {
+                        "count": "1",
+                        "name": "dubstep"
+                    },
+                    {
+                        "count": "1",
+                        "name": "electronic"
+                    },
+                    {
+                        "count": "1",
+                        "name": "idm"
+                    }
+                ]
+            },
+            {
+                "id": "3bda64dd-586b-4b7a-ab85-b5e168fde9df",
+                "title": "Love Death Immortality",
+                "status": "Official",
+                "quality": "normal",
+                "disambiguation": "iTunes release",
+                "packaging": "None",
+                "text-representation": {
+                    "language": "eng",
+                    "script": "Latn"
+                },
+                "date": "2014-02-11",
+                "country": "US",
+                "release-event-list": [
+                    {
+                        "date": "2014-02-11",
+                        "area": {
+                            "id": "489ce91b-6658-3307-9877-795b68554c98",
+                            "name": "United States",
+                            "sort-name": "United States",
+                            "iso-3166-1-code-list": [
+                                "US"
+                            ]
+                        }
+                    }
+                ],
+                "release-event-count": 1,
+                "barcode": "888003700055",
+                "medium-list": [
+                    {
+                        "position": "1",
+                        "format": "Digital Media",
+                        "disc-list": [],
+                        "disc-count": 0,
+                        "track-list": [
+                            {
+                                "id": "bbd66148-a3ab-4c25-84bc-98b5629aca80",
+                                "position": "1",
+                                "number": "1",
+                                "title": "Mind of a Beast",
+                                "length": "256000",
+                                "track_or_recording_length": "256000"
+                            }
+                        ],
+                        "track-count": 10
+                    }
+                ],
+                "medium-count": 1,
+                "tag-list": [
+                    {
+                        "count": "1",
+                        "name": "dance+and+electronica"
+                    },
+                    {
+                        "count": "1",
+                        "name": "drum-bass"
+                    },
+                    {
+                        "count": "1",
+                        "name": "dubstep"
+                    },
+                    {
+                        "count": "2",
+                        "name": "electronic"
+                    },
+                    {
+                        "count": "2",
+                        "name": "idm"
+                    },
+                    {
+                        "count": "2",
+                        "name": "instrumental"
+                    },
+                    {
+                        "count": "1",
+                        "name": "intelligent-dance-music"
+                    }
+                ]
+            }
+        ],
+        "release-count": 2
+    }
+}

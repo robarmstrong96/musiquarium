@@ -1,6 +1,3 @@
-#import django
-#django.setup()
-
 import acoustid, chromaprint, os, sys, environ, logging, discogs_client, _thread, threading, musicbrainzngs, json
 import oauth2 as oauth
 from discogs_client.exceptions import HTTPError
@@ -10,6 +7,9 @@ from urllib.parse import urlparse
 from enum import Enum, unique
 from ratelimiter import RateLimiter
 from library.add_songs import add_song_musicbrainz
+from acrcloud.recognizer import ACRCloudRecognizer
+
+''' Global variables '''
 
 # adds parent folder to python path
 sys.path.append("../")
@@ -31,23 +31,30 @@ _au = _env('AUTHORIZE_URL')
 _atu = _env('ACCESS_TOKEN_URL')
 _pt = _env("PERSONAL_TOKEN")
 
-rate_limiter = RateLimiter(max_calls=3, period=60) # helps with limiting api calls to specified web service
-temp_rate_limiter = RateLimiter(max_calls=1, period=3)
+ # helps with limiting api calls to the discogs api
+discogs_limiter = RateLimiter(max_calls=3, period=60)
 
-# registered application
+ # rate limiter used for limiting api calls to the musicbrainz api
+musicbrains_limiter = RateLimiter(max_calls=1, period=3)
+
+# registered application name represented as a string
 user_agent = 'musiquarium/0.1'
 
-# enum for different media detection methods
+# enums for different media detection methods
 class Detection(Enum):
-    AUDIO_FINGERPRINT = 1
-    METADATA = 2 # Not implementing yet
+    MUSICBRAINZS = 1
+    ACRCLOUD = 2
+    METADATA = 3 # Not implementing yet
 
-# enum for different databases to gather song information from (using above detection methods for initial song recognition)
+# enums for different databases to gather song information from
+# (using above enum 'Detection' for initial song recognition)
 class Database(Enum):
-    MUSICBRAINZ = 1 # Picard (setup but not really implemented)
+    MUSICBRAINZ = 1
     DISCOGS = 2
 
-def musiq_detect_song(detection, database, file_dir):
+''' Matching and detection functionality '''
+
+def musiq_match_song(detection, database, file_dir):
     '''
         This function will be a wrapper for the various detection functions
         i.e. this function passes a type which represents the detection method which will be used:
@@ -56,99 +63,163 @@ def musiq_detect_song(detection, database, file_dir):
 
         param : detection
             Detection method which will determine the detection method (audio fingerprinting (and metadata?) )
-        param : database
+        param : database (not in use as of yet)
             Type which determines the database to choose from a given set of databases.
         param : file_dir
             File path to music directory
     '''
 
-    if (detection == Detection.AUDIO_FINGERPRINT):
+    if (detection == Detection.MUSICBRAINZS):
         return _musicbrainz_match(file_dir, _env('MUSICBRAINZ_API_KEY')) # initial file recognition with musicbrains audio fingerprinting library
-        #if (database == Database.MUSICBRAINZ):
-        #    _musicbrainz_detect(file_dir, song_list, _env('MUSICBRAINZ_API_KEY'))
-        #if (database == Database.DISCOGS):
-        #    return _discogz_detect(file_dir)
+    elif (detection == Detection.ACRCLOUD):
+        return _acrcloud_match(file_dir)
 
 def _musicbrainz_match(file_dir, API_KEY): # Uses chromaprint and pyacousid to detect song and return detected song information
-    song_data = []
+    song_metadata = []
     for score, recording_id, title, artist in acoustid.match(API_KEY, file_dir, parse=True):
-        song_data.append([score, recording_id, title, artist])
-        logger.info(" Detection Successful! ")
+        list = [('score', score), ('recording_id', recording_id), ('title', title),
+        ('artists', dict([('artist', artist)])), ('albums', dict([('album', 'Unknown'),
+        ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
+        ('file_path', file_dir), ('track_number', 0), ('json_data', None)]
+        song_metadata.append(('song', dict(list)))
 
-    return song_data
+    return dict(song_metadata)
 
-def musicbrainz_detect(song_detected_information, user):
+def musicbrainz_retrieval(song_detected_information, match_method, user):
+    '''
+        Retrieves metadata for specified song, with the retrieval methodology
+        depending on the matching method used (i.e. Picard(musicbrainz audio
+        fingerprinting service) vs. ARCloud)
+
+        param : song_detected_information
+            Dict of information pertaining to a matched song.
+        param : match_method
+            Enum value representing the matching methodology used to detect the
+            specified song.
+        param : user
+            Django user.
+    '''
     # Set the User-Agent to be used for requests to the MusicBrainz webservice. This must be set before requests are made.
     musicbrainzngs.set_useragent('musiquarium', '0.1', 'robert.armstrong.18@cnu.edu')
 
-    for song_info in song_detected_information:
-        with temp_rate_limiter:
+    for song_metadata in song_detected_information:
+        with musicbrains_limiter:
 
-            song_title = song_info[0][2]
-            release_list = []
-            selected_release =""
-            selected_release_id=""
-            selected_release_date=""
-            artist_title = song_info[0][3]
-            track_number = 1
-            file_location = song_info[1]
+            # if the specified song was matched with the musicbrains audio fingerprinting service
+            if match_method == Detection.MUSICBRAINZS:
+                try:
+                    recording_search_result = musicbrainzngs.get_recording_by_id(
+                    song_metadata['song']['recording_id'],
+                    includes=["tags", "releases", "discids"] )
+                    release_list = []
 
-            #logger.info(f"At Data retrieval step, using id: {song_info[0][1]}")
-            try:
-                recording_search_result = musicbrainzngs.get_recording_by_id( song_info[0][1], includes=["tags", "releases", "discids"] )
+                    with open(f"json_temp/{song_metadata['song']['title']}.json", "w") as json_file:
+                        json_file.write(json.dumps(recording_search_result, indent=4))
 
-                # iterate through albums/releases
-                for recording in recording_search_result["recording"]["release-list"]:
-                    release_string = ""
-                    id_string = ""
-                    date_string = ""
-
-                    logger.info("getting release information")
-
-                    if ("title" in recording):
-                        for release in recording["title"]:
-                            release_string += release
-                    else:
+                    # iterate through albums/releases
+                    for recording in recording_search_result["recording"]["release-list"]:
                         release_string = "N/A"
-                    if ("id" in recording):  # if musicbrainz id of album is in given json data
-                        for id in recording["id"]:
-                            id_string += id
-                    else:
                         id_string = "N/A"
-                    if ("date" in recording):  # if date of album is in given json data
-                        for date in recording["date"]:
-                            date_string += date
-                    else:
                         date_string = "N/A"
 
-                    logger.info("got release information")
+                        ''' checks if existing data exists in json/meta data,
+                        sets data if exists '''
+                        if ("title" in recording):
+                        # if musicbrainz album/release title is in json data...
+                            release_string = recording["title"]
+                        if ("id" in recording):
+                        # if musicbrainz id of album is in given json data...
+                            id_string = recording["id"]
+                        if ("date" in recording):
+                        # if release date of album is in given json data...
+                            date_string = recording["date"]
 
-                    release_list.append([release_string, id_string, date_string]) # adds all album/release information to tuple
+                        # appends album information in dict format to list
+                        release_list.append(dict([('album', release_string),
+                        ('album_musicbrains_id', id_string),
+                        ('release_date', date_string)]))
 
-                # picks first album release (sorted by date)
-                selected_release = release_list[0][0]
-                selected_release_id = release_list[0][1]
-                selected_release_date = release_list[0][2]
+                    # modifies dict entry 'albums' information
+                    song_metadata['song']['albums'] = dict([('albums', release_list)])
 
-                # retrieve covert art for select album release
-                #image_data = musicbrainzngs.get_cover_art_list( selected_release_id )
-                #musicbrainzngs.get_cover_art_list("46a48e90-819b-4bed-81fa-5ca8aa33fbf3")
-                #musicbrainzngs.get_image(mbid=song_info[0][1], coverid=front)
-                #logger.info("Successfully retrieved image data!")
+                    # modifies/creates 'Song' django model instance with
+                    # given information
+                    add_song_musicbrainz(song_metadata, user)
 
-                #for image in image_data["images"]:
-                #    if "Front" in image["types"] and image["approved"]:
-                #        logger.info("%s is an approved front image!" % image["thumbnails"]["large"])
-                #        break
+                except Exception as e:
+                    logger.error(json.dumps(song_metadata, indent=4))
+                    logger.error(f"Error while grabbing musicbrainz information: {e}")
 
-                add_song_musicbrainz(song_title, selected_release, selected_release_id, selected_release_date, artist_title, file_location, user)
-                logger.info("Added item")
+            # if the specified song was matched with the ARCloud audio fingerprinting service
+            elif match_method == Detection.ACRCLOUD:
+                    result = musicbrainzngs.search_releases()
 
-            except:
-                logger.error(f"Error while grabbing {song.info} musicbrainz information")
+def _acrcloud_match(file_path):
+    '''
+        Matching function used to fingerprint a locally recognized and
+        supported (i.e. mp3, wav, flac, etc...) audio file using the
+        ACRcloud audio fingerprinting service.
 
+        param : file_path
+            Absolute file path of a recognized audio file
+    '''
 
-######### unimplemented due to issues with discogs user authorization #########
+    config = { # dict used for configuring ACRCloudRecognizer
+        'host' : 'identify-us-west-2.acrcloud.com',
+        'access_key' : 'ce28963d9965bbd732c17487e9b698dd',
+        'access_secret' : 'dYqdPQ8N1bEhnnLr2WjlGYmvyA2Gh3JuLVe5dTZv',
+        'timeout' : 10 # in seconds
+    }
+
+    # sets ACRCloudRecognizer client
+    matcher = ACRCloudRecognizer(config)
+
+    # reads given json formatted metadata into python dict
+    metadata = json.loads(matcher.recognize_by_file(file_path, 0))
+    song_metadata = []
+
+    for info in metadata['metadata']['music']:
+        temp_song_info = []
+
+        # getting song title
+        if ('title' in info):
+            temp_song_info.append(('title', info['title']))
+        else:
+            temp_song_info.append(('title', "Unknown"))
+        #getting album name
+        if ('album' in info):
+            temp_song_info.append(('albums', dict(['album', info['album']['name']])))
+        else:
+            temp_song_info.append(('album', "Unknown"))
+        # getting list of artists
+        if ('artists' in info):
+            artist_list = []
+            for artist in info['artists']:
+                artist_list.append(('artist', artist['name']))
+            temp_song_info.append(('artists', dict(artist_list)))
+        else:
+            temp_song_info.append(('artists', "Unknown"))
+        # getting list of genres
+        if ('genres' in info):
+            genres_list = []
+            for genres in info['genres']:
+                genres_list.append(('genre', genres['name']))
+            temp_song_info.append(('genres', dict(genres_list)))
+        else:
+            temp_song_info.append(('genres', "Unknown"))
+        # getting release date information
+        if ('release_date' in info):
+            temp_song_info.append(('release_date', info['release_date']))
+        else:
+            temp_song_info.append(('release_date', "Unknown"))
+        temp_song_info.append(('file_path', file_path))
+
+        song_metadata.append(('song', dict(temp_song_info)))
+
+    # returns a list of collected song data in a python dictionary
+    return dict(song_metadata)
+
+''' Unimplemented due to issues with discogs user authorization '''
 
 def _discogz_detect(file_dir): # Temporary function
     return None
@@ -180,7 +251,7 @@ def discogz_data_retrieval(song_information, client):
     search_results = []
     for info in song_information:
         logger.info(f'{info[0][2]} - {info[0][3]} - {info[1]} ')
-        with rate_limiter:
+        with discogs_limiter:
             data = client.search(info[0][2], track=info[0][2], artist=info[0][3], format='album')
 
         search_results.append(data)
