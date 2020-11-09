@@ -74,7 +74,7 @@ def profile(request):
     avatar_file = (f"{request.user.first_name}_{request.user.last_name}_{request.user.email}")
 
     # updates profile information (i.e. email, password)
-    if request.method == 'POST' and 'username' in request.POST:
+    if request.method == 'POST' and 'email' in request.POST:
         update_user_profile(request)
 
     # updates (specifically discogs) api information(maybe? might not need)
@@ -138,13 +138,26 @@ def table(request):
 def login_user(request):
     """ login html request """
     logger.info(request.method)
+
+    if request.user.is_authenticated:
+        logger.info("spaghetti!")
+        logout(request)
+
     if request.method == "POST":
         logger.info(request.method)
         user = authenticate(username=request.POST.get('email'),
         password=request.POST.get('password'))
         if user is not None:
             login(request, user)
-            return render(request, 'index.html')
+
+            song_count = Song.objects.filter(profile=user.profile).count()
+            if song_count <= 0:
+                init_import = True
+            else:
+                init_import = False
+
+            return render(request, 'index.html', {'profile': user.profile,
+            'init_import': init_import, 'song_count': song_count})
     return render(request, 'login_user.html', )
 
 def register(request):

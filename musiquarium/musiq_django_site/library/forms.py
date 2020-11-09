@@ -9,6 +9,7 @@ class RegistrationForm(UserCreationForm):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     username = models.AutoField(auto_created = True)
+    email = models.CharField(max_length=100)
     models = models.CharField(max_length=100)
 
     class Meta:
