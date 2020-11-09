@@ -20,7 +20,7 @@ class Profile(models.Model):
     discogz = models.CharField(_('Discogz User Authentication Key'), max_length=100, help_text="API Key", blank=True, null=True)
     discogz_token = models.CharField(_('Discogz token'), max_length=100, help_text="API Key", blank=True, null=True)
     discogz_secret = models.CharField(_('Discogz secret'), max_length=100, help_text="API Key", blank=True, null=True)
-    user_music_location = models.CharField(_('Music Folder Directory'), max_length=256, help_text="File Directory", blank=True, null=True)
+    user_music_location = models.CharField(_('Music Folder Directory'), max_length=512, help_text="File Directory", blank=True, null=True)
 
     def get_image_path(instance, filename):
         return os.path.join("assets/img/avatars/", filename)
@@ -69,6 +69,7 @@ class Song(models.Model):
     # Stored File Information
     album_artwork = models.ImageField(upload_to="img/album_artwork/", default="img/default/null.png", blank=True, null=True)
     duration = models.IntegerField(_('Song duration in seconds'),editable=False,default=0)
+    file_location = models.FileField(_('File Location'), max_length=512, null=True)
 
     # Song DB variables
     title = models.CharField(_('Title'), max_length=256)

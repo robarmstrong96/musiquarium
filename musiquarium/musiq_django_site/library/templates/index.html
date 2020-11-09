@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}"> <!-- /assets/bootstrap/css/bootstrap.min.css-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="{% static 'css/toast.css' %}">
 </head>
 
 <body id="page-top">
@@ -55,6 +56,7 @@
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">0</span><i class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
                                         <h6 class="dropdown-header">alerts center</h6>
+
                                         <a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a></div>
                                 </div>
                             </li>
@@ -73,6 +75,7 @@
                         </ul>
                     </div>
                 </nav>
+
             {% if init_import %}
             <form method="POST">
             {% csrf_token %}
@@ -88,54 +91,56 @@
                   <div class="tab-content">
                     <!-- First Tab -->
 
-                    <div class="card-body tab-pane container active" id="home">
-                        <h4 class="card-title text-center">Default Library Settings</h4>
+                    <div class="card-body tab-pane container-fluid active" id="home">
+                        <h4 class="card-title text-center">Library Setup</h4>
                         <p class="card-text text-center"> Set the default matching method and metadata source for your music library. </p>
-                        <div class="card-group">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title text-center">Music Collection Matching Method</h4>
-                                    <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
-                                    <div class="dropdown text-center" ><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" style="background: #eda04f;">Dropdown </button>
-                                      <div class="form-row">
-                                        <div class="dropdown-menu" id="recognition" name="recognition">
-                                          <h6 class="dropdown-header">Matching through metadata recognition</h6>
-                                            <option class="dropdown-item disabled" href="#" type="button">Metadata Recogniton</option>
-                                          <div class="dropdown-divider"></div>
-                                          <h6 class="dropdown-header">Matching through audio fingerprinting</h6>
-                                            <option class="dropdown-item" href="#" type="button" value="MusicBrainz" name="MusicBrainz">MusicBrainz</option>
-                                            <option class="dropdown-item" href="#" value="ARCloud">ARCloud</option>
-                                        </div>
-                                      </div>
-                                    </div>
-                                </div>
+                        <div class="card-group" style="max-height:400px">
+                          <div class="card" style="height: 200px">
+                            <div class="card-body" style="height: 200px">
+                              <div>
+                                <h4 class="card-title text-center">Music Collection Matching Method</h4>
+                                <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
+                              </div>
+                              <div class="dropdown text-center" style="position: absolute; bottom: 50px; align-items: center;">
+                                <select class="dropdown-menu custom-select mr-md-3" id="match" name="match">
+                                  <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
+                                  <option value="ARCloud" class="form-control" type="select">ARCloud</option>
+                                  <option value="Metadata" class="form-control" type="select" disabled>Metadata</option>
+                                </select>
+                              </div>
                             </div>
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <h4 class="card-title text-center">Music Data Source</h4>
-                                    <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
-                                    <div class="dropdown text-center"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" style="background: #eda04f;">Dropdown </button>
-                                        <div class="dropdown-menu" id="metadata" name="metadata">
-                                          <a class="dropdown-item" href="#">MusicBrainz</a>
-                                          <a class="dropdown-item disabled" href="#">Discogs</a></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                          </div>
+                          <div class="card" style="display: flex; justify-content: center; align-items: center;">
+                              <div class="card-body" style="max-height: 100rem">
+                                  <h4 class="card-title text-center">Music Data Source</h4>
+                                  <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
+                                  <div class="dropdown text-center" style="position: absolute; bottom: 50px;">
+                                    <select class="dropdown-menu custom-select mr-md-3" id="metadata" name="metadata">
+                                      <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
+                                      <option value="Dsicogs" class="form-control" type="select" disabled>Discogs</option>
+                                    </select>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                     </div>
 
                     <!-- Second Tab -->
 
                     <div class="card-body tab-pane container fade" id="menu1">
-                        <h4 class="card-title text-center">Default Library Settings</h4>
+                        <h4 class="card-title text-center">Library Setup</h4>
                         <p class="card-text text-center"> Set the location of your music collection. </p>
                         <div class="card-group">
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title text-center"> Music File Location </h4>
                                     <p class="card-text text-center">Here you will select the location where your media library location is located so that musiquarium may scan and build your library.</p>
-                                    <div class="text-center">
-                                      <input type="file" id="files" name="files" webkitdirectory directory multiple/>
+                                    <div><p id="output"></p></div>
+                                    <div class="input-group mb-3">
+                                      <input type="text" class="form-control" aria-label="Music Collection Library Directory" id="file" name="file" placeholder="Enter file directory here..."></input>
+                                      <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" id="Check_File" name="init" type="button">Check Directory</button>
+                                      </div>
                                     </div>
                                 </div>
                             </div>
@@ -145,7 +150,7 @@
                     <!-- Last Tab -->
 
                     <div class="card-body tab-pane container fade" id="menu2">
-                        <h4 class="card-title text-center">Default Library Settings</h4>
+                        <h4 class="card-title text-center">Library Setup</h4>
                         <p class="card-text text-center"> Begin the initialization process </p>
                         <div class="card-group">
                             <div class="card">
@@ -153,22 +158,31 @@
                                     <h4 class="card-title text-center text-center"> Initialization </h4>
                                     <p class="card-text text-center text-center">Press the button below to start the Initialization process.</p>
                                     <div class="text-center">
-                                      <button class="btn btn-primary" type="submit" name="initialize" style="background: #eda04f;">Organize</button>
+                                      <button class="btn btn-primary" type="submit" value="init" style="background: #eda04f;">Initialize Library</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                   </div>
-
-                    <!-- Last Tab -->
-
+                </div>
+              </div>
+            </form>
+            {% else %}
+            <div class="card-group" >
+              <div class="card" style="width:100%;float: none;margin: 0 auto">
+                <div class="row">
+                  <div class="col d-flex">
+                    <div class="card-body border rounded border-warning shadow col" style="width:10rem;text-align: center;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
+                      <h4 class="card-title">Song Count</h4>
+                      <p class="card-text text-center">{{song_count}} songs</p>
+                    </div>
                   </div>
                 </div>
-              </form>
-            {% else %}
-              <p> Set the location of your music collection. </p>
-            {% endif %}
+              </div>
+            </div>
+          {% endif %}
+
         </div>
         <footer class="bg-white sticky-footer">
             <div class="container my-auto">
@@ -180,6 +194,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="{% static 'js/theme.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/toast.js' %}"></script>
 </body>
 
 </html>

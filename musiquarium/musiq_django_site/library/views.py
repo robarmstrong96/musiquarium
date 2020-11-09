@@ -1,10 +1,13 @@
-import os, sys, psycopg2, logging, _thread, json
+import os, sys, psycopg2, logging, _thread, threading, json, pathlib, asyncio, time
+from queue import Queue
+from ratelimiter import RateLimiter
 from threading import Thread, Lock
 from django import forms
 from django.db import connection
 from django.http import JsonResponse
 from library.models import Song
-from library.test_run import testrun # relative import
+from library.file_detection import directory_scan # relative import
+from library.detection_music import Detection, Database, musiq_match_song, musiq_retrieve_song
 from django.views.generic import ListView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
@@ -15,7 +18,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import RegistrationForm, DiscogzAPIForm, ImageUploadForm, BulkInitilization
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, HttpResponse
-from library.detection_music import discogz_personal_client, discogz_data_retrieval, musicbrainz_retrieval, discogz_client_authorization, discogz_get_client, Detection, Database
+
 
 logger = logging.getLogger("mylogger")
 
@@ -33,14 +36,35 @@ def index(request):
 
     # Checks to see if user has any detected media already. If so, user is
     # prompted to start the initial bulk library import process.
-    if Song.objects.filter(profile=request.user.profile).count() <= 0:
+    song_count = Song.objects.filter(profile=request.user.profile).count()
+    if song_count <= 0:
         init_import = True
-        logger.info(request.POST)
     else:
         init_import = False
 
+    # dict used for initial bulk library creation
+    init_bulk_detect = {
+        'match': None,
+        'metadata': None,
+        'file_dir': None,
+    }
+
+    # checks for post items for initial library creation
+    if request.method == 'POST' and 'match' in request.POST:
+        init_bulk_detect['match'] = request.POST['match']
+    if request.method == 'POST' and 'metadata' in request.POST:
+        init_bulk_detect['metadata'] = request.POST['metadata']
+    if request.method == 'POST' and 'file' in request.POST:
+        init_bulk_detect['file_dir'] = request.POST['file']
+
+    # starts bulk user music library initialization
+    if request.method == 'POST' and 'match' in request.POST and 'metadata' in request.POST and 'file' in request.POST:
+        import_daemon = BulkImport(request.user, init_bulk_detect)
+        import_daemon.daemon = True
+        import_daemon.start()
+
     return render(request, 'index.html', {'profile': request.user.profile,
-    'init_import': init_import})
+    'init_import': init_import, 'song_count': song_count})
 
 @login_required(login_url='/library/login_user')
 def profile(request):
@@ -53,11 +77,16 @@ def profile(request):
     if request.method == 'POST' and 'username' in request.POST:
         update_user_profile(request)
 
-    # updates api information(maybe? might not need)
+    # updates (specifically discogs) api information(maybe? might not need)
     if request.method == 'POST' and 'discogz' in request.POST:
         form = update_profile(request) # Updates profile model, returns form with updated data
     else:
         form = DiscogzAPIForm()
+
+    # deletes library information associated with user profile
+    if request.method == "POST" and 'delete' in request.POST:
+        logger.info(f"Deleting all entries for profile {request.user.profile}")
+        Song.objects.filter(profile=request.user.profile).delete()
 
     # sets profile avatar image
     if request.method == 'POST':
@@ -74,8 +103,6 @@ def profile(request):
     else:
         upload_form = ImageUploadForm()
 
-    logger.info(request.user.profile.avatar)
-
     # generate client api key
     # if request.method == 'POST' and 'authenticate' in request.POST:
         #client = discogz_get_client() # 1) get discogz client instance
@@ -90,12 +117,19 @@ def profile(request):
 def table(request):
     """ table html request """
     song_list = Song.objects.filter(profile=request.user.profile)
-    if request.method == "POST" and 'organize' in request.POST:
-        detect = BulkImport(request.user)
-        detect.daemon = True
-        detect.start()
-        #list = testrun()
-        #logger.info("Starting data retrieval..")
+
+    for song in song_list:
+        logger.info(song.file_location.__str__())
+
+    #if request.method == "POST" and 'organize' in request.POST:
+        #detect = BulkImport(request.user)
+        #detect.daemon = True
+        #detect.start()
+        #BASE_DIR = pathlib.Path(__file__).resolve()
+        #PATHS = os.path.join(BASE_DIR.parents[1].__str__(), 'media/')
+        #logger.info(PATHS)
+        #list = file_detection(Detection.MUSICBRAINZS, Database.MUSICBRAINZ, PATHS)
+        #logger.info("created list...")
         #musicbrainz_retrieval(list, Detection.MUSICBRAINZS, request.user)
 
     return render(request, 'table.html', {'page_obj': song_list,
@@ -138,6 +172,40 @@ def register(request):
         functions, etc...)
 """
 
+def _bulk_import(init_dict, user):
+    match_limiter = RateLimiter(max_calls=1, period=3)
+    database_limiter = RateLimiter(max_calls=1, period=3)
+    matched_songs = [] # songs that have been matched
+
+    #try:
+    # rate limiter used for limiting api calls to the matcher api
+    if (init_dict['match'] == Detection.MUSICBRAINZS):
+        match_limiter = RateLimiter(max_calls=1, period=1)
+
+    # rate limiter used for limiting api calls to the database api
+    if (init_dict['metadata'] == Database.MUSICBRAINZ):
+        database_limiter = RateLimiter(max_calls=1, period=1)
+
+    # 1) obtains files and enum values based on given media directory and
+    # given sting values representing matching methods/databases.
+    matching, database, files = directory_scan(init_dict['match'],
+    init_dict['metadata'], init_dict['file_dir'])
+
+    # 2) matches the detected songs with preffered matching methodology
+    logger.info("Matching songs...")
+    for file in files:
+        with match_limiter:
+            matched_songs.append(musiq_match_song(matching, file))
+
+    # 3) retrieves song metadata from specified database
+    logger.info("Retrieving metadata...")
+    for match in matched_songs:
+        with database_limiter:
+            musiq_retrieve_song(match, database, matching, user)
+
+    #except Exception as e:
+    #    logger.error(f"Error during bulk import in def: {e}")
+
 def logout(request):
     auth.logout(request)
     return redirect('login_user')
@@ -147,24 +215,21 @@ class BulkImport(Thread):
         Thread for bulk matching and detecting functionality.
     '''
 
-    def __init__(self, user):
+    def __init__(self, user, dict_metadata):
         Thread.__init__(self)
         self.user = user
+        self.metadata = dict_metadata
 
     def run(self):
-        user = self.user
         while True:
             try:
-                #client = discogz_personal_client()
-                list = testrun()
-                logger.info("created list...")
-                musicbrainz_retrieval(list, Detection.MUSICBRAINZS, user)
-                #discogz_data_retrieval(list, client)
-            except:
-                logger.error(sys.exc_info()[0])
+                logger.info("Starting bulk import...")
+                _bulk_import(self.metadata, self.user)
+            except Exception as e:
+                logger.error(f"Error during bulk import in thread: {e}")
             finally:
-                logger.info("Finished thread!")
-                return True
+                logger.info("Finished bulk import!")
+                return
 
 def update_profile(request):
     '''

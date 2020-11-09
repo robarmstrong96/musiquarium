@@ -33,15 +33,16 @@ def add_song_musicbrainz(song_metadata, user):
                     "release_date": release_date,
                     "detection_method": "Musicbrains",
                     "album_artwork": image_path,
-                    'json_item': json.dumps(song_metadata)})
+                    "json_item": json.dumps(song_metadata),
+                    "file_location": song_metadata['song']['file_path']})
         if (created):
             new.save()
             #messages.success(request, f"Song \'{song_metadata['song']['title']}\' updated")
-            #logger.info("Old song, updating...")
+            logger.info("New song, creating...")
         else:
             new.save()
             #messages.success(request, f"Song \'{song_metadata['song']['title']}\' added")
-            #logger.info("New song, creating...")
+            logger.info("Old song, updating...")
         #logger.info("Done.")
 
     except Exception as e:

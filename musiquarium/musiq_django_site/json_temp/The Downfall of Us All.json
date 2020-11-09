@@ -1,434 +1,86 @@
 {
-    "recording": {
-        "id": "5848a309-2a35-4c5c-a646-c82adf6bb08f",
-        "title": "The Downfall of Us All",
-        "length": "209093",
-        "release-list": [
-            {
-                "id": "c43337a9-828c-4444-a805-b60bbe7ba497",
-                "title": "Homesick",
-                "status": "Official",
-                "quality": "normal",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009-02-03",
-                "country": "US",
-                "release-event-list": [
+    "id": "bcb007fe-a51b-4925-ae7a-a2c9132ca6ea",
+    "ext:score": "100",
+    "title": "The Downfall of Us All",
+    "length": "237000",
+    "disambiguation": "live at Greenfield Festival in Interlaken, Switzerland on June 13, 2009",
+    "video": "true",
+    "artist-credit": [
+        {
+            "name": "A Day to Remember",
+            "artist": {
+                "id": "db008806-16f6-48fc-8521-3d953709689d",
+                "name": "A Day to Remember",
+                "sort-name": "Day to Remember, A",
+                "disambiguation": "US post-hardcore band",
+                "alias-list": [
                     {
-                        "date": "2009-02-03",
-                        "area": {
-                            "id": "489ce91b-6658-3307-9877-795b68554c98",
-                            "name": "United States",
-                            "sort-name": "United States",
-                            "iso-3166-1-code-list": [
-                                "US"
-                            ]
-                        }
+                        "sort-name": "ADtR",
+                        "type": "Search hint",
+                        "alias": "ADtR"
                     }
-                ],
-                "release-event-count": 1,
-                "barcode": "746105044821",
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [
-                            {
-                                "id": "gFLXUhBYnu13q0Q8a3iakWf_904-",
-                                "sectors": "182876",
-                                "offset-list": [
-                                    150,
-                                    15832,
-                                    31867,
-                                    45430,
-                                    61265,
-                                    80452,
-                                    94613,
-                                    108108,
-                                    125854,
-                                    141146,
-                                    147710,
-                                    164634
-                                ],
-                                "offset-count": 12
-                            }
-                        ],
-                        "disc-count": 1,
-                        "track-list": [
-                            {
-                                "id": "49783fa3-4ccb-3135-9865-3f837dee6922",
-                                "position": "1",
-                                "number": "1",
-                                "title": "The Downfall of Us All",
-                                "length": "209000",
-                                "track_or_recording_length": "209000"
-                            }
-                        ],
-                        "track-count": 12
-                    }
-                ],
-                "medium-count": 1
-            },
-            {
-                "id": "c81e9c52-683e-4bd4-87af-7995cdac974b",
-                "title": "The Downfall of Us All",
-                "status": "Official",
-                "quality": "normal",
-                "packaging": "Jewel Case",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009-03-03",
-                "country": "XW",
-                "release-event-list": [
-                    {
-                        "date": "2009-03-03",
-                        "area": {
-                            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
-                            "name": "[Worldwide]",
-                            "sort-name": "[Worldwide]",
-                            "iso-3166-1-code-list": [
-                                "XW"
-                            ]
-                        }
-                    }
-                ],
-                "release-event-count": 1,
-                "barcode": "",
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [],
-                        "disc-count": 0,
-                        "track-list": [
-                            {
-                                "id": "3eebd2fa-e021-453e-a5ad-d125e853f9a5",
-                                "position": "2",
-                                "number": "2",
-                                "title": "The Downfall of Us All"
-                            }
-                        ],
-                        "track-count": 2
-                    }
-                ],
-                "medium-count": 1
-            },
-            {
-                "id": "e7277b6a-ebf1-4233-a6c9-a78b8e9478a1",
-                "title": "Promo Only: Modern Rock Radio, July 2009",
-                "status": "Promotion",
-                "quality": "normal",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009-06-29",
-                "country": "US",
-                "release-event-list": [
-                    {
-                        "date": "2009-06-29",
-                        "area": {
-                            "id": "489ce91b-6658-3307-9877-795b68554c98",
-                            "name": "United States",
-                            "sort-name": "United States",
-                            "iso-3166-1-code-list": [
-                                "US"
-                            ]
-                        }
-                    }
-                ],
-                "release-event-count": 1,
-                "barcode": "",
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [],
-                        "disc-count": 0,
-                        "track-list": [
-                            {
-                                "id": "780a58b4-00f1-3d38-a192-32c944e7c2aa",
-                                "position": "10",
-                                "number": "10",
-                                "title": "The Downfall of Us All",
-                                "length": "210000",
-                                "track_or_recording_length": "210000"
-                            }
-                        ],
-                        "track-count": 19
-                    }
-                ],
-                "medium-count": 1
-            },
-            {
-                "id": "e315cb82-c4a4-4c26-ade5-4fda93af2d5e",
-                "title": "Homesick",
-                "status": "Official",
-                "quality": "normal",
-                "disambiguation": "Special Edition",
-                "packaging": "Jewel Case",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009-10-26",
-                "country": "US",
-                "release-event-list": [
-                    {
-                        "date": "2009-10-26",
-                        "area": {
-                            "id": "489ce91b-6658-3307-9877-795b68554c98",
-                            "name": "United States",
-                            "sort-name": "United States",
-                            "iso-3166-1-code-list": [
-                                "US"
-                            ]
-                        }
-                    }
-                ],
-                "release-event-count": 1,
-                "barcode": "746105054127",
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [
-                            {
-                                "id": "qyv45QF0fxUsDkByyzcGvxFrsco-",
-                                "sectors": "218160",
-                                "offset-list": [
-                                    150,
-                                    15832,
-                                    31867,
-                                    45430,
-                                    61265,
-                                    80452,
-                                    94613,
-                                    108108,
-                                    125854,
-                                    141146,
-                                    147710,
-                                    164634,
-                                    182876,
-                                    201449
-                                ],
-                                "offset-count": 14
-                            }
-                        ],
-                        "disc-count": 1,
-                        "track-list": [
-                            {
-                                "id": "ab9b5f96-2807-371c-85b0-1eff455551ac",
-                                "position": "1",
-                                "number": "1",
-                                "title": "The Downfall of Us All",
-                                "length": "209093",
-                                "track_or_recording_length": "209093"
-                            }
-                        ],
-                        "track-count": 14
-                    }
-                ],
-                "medium-count": 1
-            },
-            {
-                "id": "6eb92b5c-b64a-4992-be14-fff638586331",
-                "title": "Homesick",
-                "status": "Official",
-                "quality": "normal",
-                "disambiguation": "Special Edition Deluxe DVD",
-                "packaging": "Digipak",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009-10-26",
-                "country": "US",
-                "release-event-list": [
-                    {
-                        "date": "2009-10-26",
-                        "area": {
-                            "id": "489ce91b-6658-3307-9877-795b68554c98",
-                            "name": "United States",
-                            "sort-name": "United States",
-                            "iso-3166-1-code-list": [
-                                "US"
-                            ]
-                        }
-                    }
-                ],
-                "release-event-count": 1,
-                "barcode": "746105055025",
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [],
-                        "disc-count": 0,
-                        "track-list": [
-                            {
-                                "id": "240789da-9025-469d-8dad-3fde9f4fffa0",
-                                "position": "1",
-                                "number": "1",
-                                "title": "The Downfall of Us All",
-                                "length": "209093",
-                                "track_or_recording_length": "209093"
-                            }
-                        ],
-                        "track-count": 14
-                    }
-                ],
-                "medium-count": 1
-            },
-            {
-                "id": "ddb13484-5ba4-478c-af5f-d0a6a694cddc",
-                "title": "Another Victory - 2009 New Music Sampler",
-                "status": "Promotion",
-                "quality": "normal",
-                "packaging": "Jewel Case",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009",
-                "country": "US",
-                "release-event-list": [
-                    {
-                        "date": "2009",
-                        "area": {
-                            "id": "489ce91b-6658-3307-9877-795b68554c98",
-                            "name": "United States",
-                            "sort-name": "United States",
-                            "iso-3166-1-code-list": [
-                                "US"
-                            ]
-                        }
-                    }
-                ],
-                "release-event-count": 1,
-                "barcode": "",
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [
-                            {
-                                "id": "YHvN9fgFLeZ_S1UmqCpUxtULJyk-",
-                                "sectors": "334269",
-                                "offset-list": [
-                                    150,
-                                    15282,
-                                    29897,
-                                    45579,
-                                    59838,
-                                    78042,
-                                    92296,
-                                    107458,
-                                    122821,
-                                    140715,
-                                    155918,
-                                    169078,
-                                    183637,
-                                    194216,
-                                    209528,
-                                    227028,
-                                    241030,
-                                    256292,
-                                    277014,
-                                    294360,
-                                    304396,
-                                    319672
-                                ],
-                                "offset-count": 22
-                            }
-                        ],
-                        "disc-count": 1,
-                        "track-list": [
-                            {
-                                "id": "1238446c-b6b0-4f21-8b54-0d4d5d6b7a8a",
-                                "position": "3",
-                                "number": "3",
-                                "title": "The Downfall of Us All",
-                                "length": "209093",
-                                "track_or_recording_length": "209093"
-                            }
-                        ],
-                        "track-count": 22
-                    }
-                ],
-                "medium-count": 1
-            },
-            {
-                "id": "d46d7dc9-56fd-41bc-b81d-734eec42871b",
-                "title": "Victory Records $timulus Package",
-                "status": "Promotion",
-                "quality": "normal",
-                "text-representation": {
-                    "language": "eng",
-                    "script": "Latn"
-                },
-                "date": "2009",
-                "country": "US",
-                "release-event-list": [
-                    {
-                        "date": "2009",
-                        "area": {
-                            "id": "489ce91b-6658-3307-9877-795b68554c98",
-                            "name": "United States",
-                            "sort-name": "United States",
-                            "iso-3166-1-code-list": [
-                                "US"
-                            ]
-                        }
-                    }
-                ],
-                "release-event-count": 1,
-                "medium-list": [
-                    {
-                        "position": "1",
-                        "format": "CD",
-                        "disc-list": [
-                            {
-                                "id": "eB3uPxVwT8F6cKHmRrN5ebx0TH0-",
-                                "sectors": "178577",
-                                "offset-list": [
-                                    150,
-                                    12539,
-                                    30019,
-                                    38972,
-                                    54804,
-                                    69073,
-                                    82698,
-                                    100910,
-                                    122262,
-                                    136671,
-                                    150401,
-                                    166427
-                                ],
-                                "offset-count": 12
-                            }
-                        ],
-                        "disc-count": 1,
-                        "track-list": [
-                            {
-                                "id": "49e4a091-ccba-3f79-bdd1-0e1cc9cfa5bc",
-                                "position": "4",
-                                "number": "4",
-                                "title": "The Downfull of Us All",
-                                "length": "211093",
-                                "track_or_recording_length": "211093"
-                            }
-                        ],
-                        "track-count": 12
-                    }
-                ],
-                "medium-count": 1
+                ]
             }
-        ],
-        "release-count": 7
-    }
+        }
+    ],
+    "release-list": [
+        {
+            "id": "6eb92b5c-b64a-4992-be14-fff638586331",
+            "title": "Homesick",
+            "status": "Official",
+            "disambiguation": "Special Edition Deluxe DVD",
+            "artist-credit": [
+                {
+                    "name": "A Day to Remember",
+                    "artist": {
+                        "id": "db008806-16f6-48fc-8521-3d953709689d",
+                        "name": "A Day to Remember",
+                        "sort-name": "Day to Remember, A",
+                        "disambiguation": "US post-hardcore band"
+                    }
+                }
+            ],
+            "release-group": {
+                "id": "d5eee7a8-a87f-304e-a6bd-1dd756dd686f",
+                "type": "Album",
+                "title": "Homesick",
+                "primary-type": "Album"
+            },
+            "date": "2009-10-26",
+            "country": "US",
+            "release-event-list": [
+                {
+                    "date": "2009-10-26",
+                    "area": {
+                        "id": "489ce91b-6658-3307-9877-795b68554c98",
+                        "name": "United States",
+                        "sort-name": "United States",
+                        "iso-3166-1-code-list": [
+                            "US"
+                        ]
+                    }
+                }
+            ],
+            "medium-list": [
+                {
+                    "position": "2",
+                    "format": "DVD",
+                    "track-list": [
+                        {
+                            "id": "b9f9434d-32f6-4b2f-997d-1b19240452f0",
+                            "number": "1",
+                            "title": "The Downfall of Us All (Live at Greenfield Festival in Interlaken, Switzerland on June 13, 2009)",
+                            "length": "237000",
+                            "track_or_recording_length": "237000"
+                        }
+                    ],
+                    "track-count": 9
+                }
+            ],
+            "medium-track-count": 23,
+            "medium-count": 2,
+            "artist-credit-phrase": "A Day to Remember"
+        }
+    ],
+    "artist-credit-phrase": "A Day to Remember"
 }

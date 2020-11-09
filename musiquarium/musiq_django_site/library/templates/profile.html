@@ -157,7 +157,8 @@
                   <div class="row">
                     <div class="card-body border rounded border-warning shadow col"  style="width:10rem;text-align: left;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
                       <h4 class="card-title">Delete Library Info?</h4>
-                      <p class="card-text">By selecting this option, you will be deleting all collected library information associated with musiquarium (this does not include your local media, just musiquarium information)</p><button class="btn btn-primary" type="button" style="background: #eda04f;">Button</button>
+                      <p class="card-text">By selecting this option, you will be deleting all collected library information associated with musiquarium (this does not include your local media, just musiquarium information)</p>
+                      <form method="POST">{% csrf_token %}<button class="btn btn-primary" type="submit" name="delete" id="delete" style="background: #eda04f;">Button</button></form>
                     </div>
                     <div class="card-body border rounded border-warning shadow col" style="width:10rem;text-align: left;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
                       <h4 class="card-title">API Key(s)</h4>
