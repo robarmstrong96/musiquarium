@@ -1,4 +1,4 @@
-import sys, os, datetime
+import sys, os, datetime, discogs_client, environ
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -9,6 +9,19 @@ from django.contrib.auth.forms import UserCreationForm
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 
+# grabs .env information
+environ.Env.read_env()
+_env = environ.Env()
+_ck = _env('CONSUMER_KEY')
+_cs = _env('CONSUMER_SECRET')
+_rtu = _env('REQUEST_TOKEN_URL')
+_au = _env('AUTHORIZE_URL')
+_atu = _env('ACCESS_TOKEN_URL')
+_pt = _env("PERSONAL_TOKEN")
+
+# registered application name represented as a string
+user_agent = 'musiquarium/0.1'
+
 """ Profile Information """
 
 class Profile(models.Model):
@@ -17,20 +30,21 @@ class Profile(models.Model):
         while adding some extra functionality (i.e. storage of api key's for database authentication)
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    discogz = models.CharField(_('Discogz User Authentication Key'), max_length=100, help_text="API Key", blank=True, null=True)
-    discogz_token = models.CharField(_('Discogz token'), max_length=100, help_text="API Key", blank=True, null=True)
-    discogz_secret = models.CharField(_('Discogz secret'), max_length=100, help_text="API Key", blank=True, null=True)
+    discogs_client = discogs_client.Client(user_agent) # temporary
+    discogs_client.set_consumer_key(_ck, _cs) # temporary
+    discogs_access_token = models.CharField(_('Discogs Access Token'), max_length=128, blank=True, null=True)
+    discogs_access_secret = models.CharField(_('Discogs Access Secret'), max_length=128, blank=True, null=True)
     user_music_location = models.CharField(_('Music Folder Directory'), max_length=512, help_text="File Directory", blank=True, null=True)
-
-    def get_image_path(instance, filename):
-        return os.path.join("assets/img/avatars/", filename)
-
-    avatar = models.ImageField(upload_to=get_image_path, default="assets/img/default/avatar_male.png")
 
     class Meta:
         verbose_name = ("Profile")
         verbose_name_plural = ("Profiles")
         ordering = ['user']
+
+    def get_image_path(instance, filename):
+        return os.path.join("assets/img/avatars/", filename)
+
+    avatar = models.ImageField(upload_to=get_image_path, default="assets/img/default/avatar_male.png")
 
     def __str__(self):
         return self.user.username
@@ -40,9 +54,16 @@ class Profile(models.Model):
             os.remove(self.avatar.__str__())
         self.avatar = os.path.join("assets/img/avatars/", filename)
 
+    def get_discogs_info(self):
+        return self.discogs_access_token, self.discogs_access_secret
+
 # signal method which creates current user associated profile upon profile creation
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    """
+        This [signal] function automatically associates a user with a profile
+        upon creation.
+    """
     try:
         instance.profile.save()
     except ObjectDoesNotExist:
@@ -50,8 +71,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 # sets username upon profile creation
 def set_username(sender, instance, **kwargs):
+    """
+        Automatically sets the username for a profile/user upon creation.
+    """
     if not instance.username:
-        username = instance.first_name
+        username = instance.email
         counter = 1
         while User.objects.filter(username=username):
             username = instance.email
@@ -63,6 +87,10 @@ models.signals.pre_save.connect(set_username, sender=User)
 
 
 class Song(models.Model):
+    """
+        This model defines a song in the musiquarium application. A song contains
+        various metadata, including artist, album and album art information.
+    """
     # Stored json information
     json_item = models.CharField(max_length=4000, blank=True, null=True)
 
@@ -96,15 +124,6 @@ class Song(models.Model):
 
     def get_json():
         return json.loads(self.json_item)
-
-    def get_artist():
-        return self.artist
-
-    def get_album():
-        return self.album
-
-    def get_genre():
-        return self.genre
 
     def __str__(self):
         return self.title

@@ -1,4 +1,4 @@
-import os, sys, psycopg2, logging, _thread, threading, json, pathlib, asyncio, time
+import os, sys, psycopg2, logging, _thread, threading, json, pathlib, asyncio, time, discogs_client
 from queue import Queue
 from ratelimiter import RateLimiter
 from threading import Thread, Lock
@@ -7,7 +7,7 @@ from django.db import connection
 from django.http import JsonResponse
 from library.models import Song
 from library.file_detection import directory_scan # relative import
-from library.detection_music import Detection, Database, musiq_match_song, musiq_retrieve_song
+from library.detection_music import Detection, Database, musiq_match_song, musiq_retrieve_song, discogs_create_new_client
 from django.views.generic import ListView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
@@ -21,9 +21,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 
 logger = logging.getLogger("mylogger")
-
-# registered application
-user_agent = 'musiquarium/0.1'
 
 # --------------------------------- template view files -----------------------#
 """
@@ -50,6 +47,7 @@ def index(request):
     }
 
     # checks for post items for initial library creation
+    logger.info(request.POST)
     if request.method == 'POST' and 'match' in request.POST:
         init_bulk_detect['match'] = request.POST['match']
     if request.method == 'POST' and 'metadata' in request.POST:
@@ -59,9 +57,10 @@ def index(request):
 
     # starts bulk user music library initialization
     if request.method == 'POST' and 'match' in request.POST and 'metadata' in request.POST and 'file' in request.POST:
-        import_daemon = BulkImport(request.user, init_bulk_detect)
-        import_daemon.daemon = True
-        import_daemon.start()
+        #import_daemon = BulkImport(request.user, init_bulk_detect)
+        #import_daemon.daemon = True
+        #import_daemon.start()
+        _bulk_import(init_bulk_detect, request.user)
 
     return render(request, 'index.html', {'profile': request.user.profile,
     'init_import': init_import, 'song_count': song_count})
@@ -103,12 +102,22 @@ def profile(request):
     else:
         upload_form = ImageUploadForm()
 
-    # generate client api key
-    # if request.method == 'POST' and 'authenticate' in request.POST:
-        #client = discogz_get_client() # 1) get discogz client instance
-        #request_token, request_secret, url = client.get_authorize_url() # 2) get request information
-        #discogz_client_authorization(client, request.user.profile)
-        #return HttpResponseRedirect(url)
+    logger.info(request.POST)
+
+    # configure discogs
+    if request.method == 'POST' and 'configure' in request.POST:
+        token, secret, url = request.user.profile.discogs_client.get_authorize_url()
+        return redirect(url)
+    elif request.method == 'POST' and 'verify' in request.POST and 'configure' not in request.POST:
+        try:
+            token, secret = request.user.profile.discogs_client.get_access_token(request.POST['verifier'])
+            request.user.profile.discogs_access_secret = secret
+            request.user.profile.discogs_access_token = token
+            request.user.profile.save()
+            request.user.save()
+        except HTTPError:
+            print('Unable to authenticate')
+            sys.exit(1)
 
     return render(request, 'profile.html', {'form': form,
     'upload_form': upload_form, 'profile': request.user.profile})
@@ -121,33 +130,21 @@ def table(request):
     for song in song_list:
         logger.info(song.file_location.__str__())
 
-    #if request.method == "POST" and 'organize' in request.POST:
-        #detect = BulkImport(request.user)
-        #detect.daemon = True
-        #detect.start()
-        #BASE_DIR = pathlib.Path(__file__).resolve()
-        #PATHS = os.path.join(BASE_DIR.parents[1].__str__(), 'media/')
-        #logger.info(PATHS)
-        #list = file_detection(Detection.MUSICBRAINZS, Database.MUSICBRAINZ, PATHS)
-        #logger.info("created list...")
-        #musicbrainz_retrieval(list, Detection.MUSICBRAINZS, request.user)
-
     return render(request, 'table.html', {'page_obj': song_list,
     'size': song_list.count(), 'profile': request.user.profile})
 
 def login_user(request):
     """ login html request """
-    logger.info(request.method)
 
     if request.user.is_authenticated:
-        logger.info("spaghetti!")
+        logger.info(f"\'{request.user}\' is currently logged in, logging out")
         logout(request)
 
     if request.method == "POST":
-        logger.info(request.method)
         user = authenticate(username=request.POST.get('email'),
         password=request.POST.get('password'))
         if user is not None:
+            logger.info(f"logging in {user}")
             login(request, user)
 
             song_count = Song.objects.filter(profile=user.profile).count()
@@ -169,7 +166,7 @@ def register(request):
             user.refresh_from_db()  # load the profile instance created by the signal
             user.save()
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=user.username, password=raw_password)
+            user = authenticate(username=user.email, password=raw_password)
             login(request, user)
             return redirect('index')
     else:
@@ -199,6 +196,9 @@ def _bulk_import(init_dict, user):
     if (init_dict['metadata'] == Database.MUSICBRAINZ):
         database_limiter = RateLimiter(max_calls=1, period=1)
 
+    if (init_dict['metadata'] == Database.DISCOGS):
+        database_limiter = RateLimiter(max_calls=60, period=60)
+
     # 1) obtains files and enum values based on given media directory and
     # given sting values representing matching methods/databases.
     matching, database, files = directory_scan(init_dict['match'],
@@ -217,7 +217,7 @@ def _bulk_import(init_dict, user):
             musiq_retrieve_song(match, database, matching, user)
 
     #except Exception as e:
-    #    logger.error(f"Error during bulk import in def: {e}")
+    #    logger.error(f"Error during main bulk import: {e}")
 
 def logout(request):
     auth.logout(request)
@@ -239,23 +239,10 @@ class BulkImport(Thread):
                 logger.info("Starting bulk import...")
                 _bulk_import(self.metadata, self.user)
             except Exception as e:
-                logger.error(f"Error during bulk import in thread: {e}")
+                logger.error(f"Error during bulk import in a thread: {e}")
             finally:
                 logger.info("Finished bulk import!")
                 return
-
-def update_profile(request):
-    '''
-        Function for adding discogs user information.
-    '''
-    profile = request.user.profile
-    form = DiscogzAPIForm(request.POST or None)
-    if form.is_valid():
-        profile.discogz = request.POST['discogz']
-        profile.save()
-    request.user.save()
-
-    return form
 
 def update_user_profile(request):
     profile = request.user.profile
@@ -268,5 +255,5 @@ def update_user_profile(request):
     if 'last_name' in request.POST:
         logger.info('last_name' in request.POST)
         request.user.last_name = request.POST['last_name']
-    request.user.profile.save()
+    #request.user.profile.save()
     request.user.save()

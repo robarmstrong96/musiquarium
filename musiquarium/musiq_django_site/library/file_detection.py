@@ -14,13 +14,12 @@ file_extensions = [".mp3",
                     ".wav",
                     ".aac"]
 
-# rate_limiter = RateLimiter(max_calls=3, period=1) # helps with limiting api calls to specified web service
-
 def directory_scan(detection, database, file_dir):
     # scans media for media files
     song_paths = []
 
     # Detects files in given directory
+    logger.info(f"\'{os.path.abspath(file_dir)}\'")
     for subdir, dirs, files in os.walk(os.path.abspath(file_dir)):
          for file in files:
             for extension in file_extensions:
@@ -32,11 +31,8 @@ def directory_scan(detection, database, file_dir):
     enum_detect, enum_database = _get_enum_values(detection, database)
 
     # function return
+    logger.info("Done!")
     return enum_detect, enum_database, song_paths
-
-    # calls specified recognition method and specifies database
-    #for file_path in songs:
-    #    if (os.path.isfile(file_path)):
 
 def _get_enum_values(detection, database):
     enum_detect = ""
@@ -54,4 +50,5 @@ def _get_enum_values(detection, database):
     elif database == "Discogs":
         enum_database = Database.DISCOGS
 
+    logger.info(f"{enum_detect} and {enum_database}")
     return enum_detect, enum_database

@@ -125,9 +125,6 @@
                                         <form method="POST">
                                         {% csrf_token %}
                                             <div class="form-row">
-                                                <!--div class="col">
-                                                    <div class="form-group"><label for="username"><strong>Username</strong></label><input class="form-control" type="text" placeholder="{{ profile.user.username }}" name="username"></div>
-                                                </div-->
                                                 <div class="col">
                                                     <div class="form-group"><label for="email"><strong>Email Address</strong></label><input class="form-control" type="email" placeholder="{{ profile.user.email }}" name="email"></div>
                                                 </div>
@@ -161,23 +158,27 @@
                       <form method="POST">{% csrf_token %}<button class="btn btn-primary" type="submit" name="delete" id="delete" style="background: #eda04f;">Button</button></form>
                     </div>
                     <div class="card-body border rounded border-warning shadow col" style="width:10rem;text-align: left;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
-                      <h4 class="card-title">API Key(s)</h4>
-                      <form class="card" method="POST">
-                        {% for field in form %}{% csrf_token %}
-                          <div class="form text-center">
-                              <div label="form">{{ field.label }} {{ field }}<button class="btn btn-primary" type="submit" style="background: #eda04f;">Submit</button></form></div>
-                          </div>
-                          <div class="form text-center"><p>Current {{ field.label }} API Key: "{{ profile.discogz }}"</p></div>
-                          <form method='POST'>
-                            <div class="form text-center"><p>To Generate an API key, click the button below.</p>
-                              {% csrf_token %}
-                              <button class="btn btn-primary" type="submit" name="authenticate" style="background: #eda04f;">Generate</button></div>
-                          </form>
+                      <h4 class="card-title">Configure Discogs</h4>
+                      <form class="card-text" method="POST">
+                        <div class="form text-center">
+                          <p>Step 1: Authorize Discogs with your personal Discogs account. Simply click the button below to access the needed key. Make sure to copy the key because you will need to enter it in the next step.</p>
+                          {% csrf_token %}
+                          <button class="btn btn-primary" type="submit" name="configure" style="background: #eda04f;">Grab Discogs Authentication Key</button>
                         </div>
-                        {% endfor %}
+                        <div class="form text-center">
+                          <p>Step 2: Enter in the key obtained from step 1 below to verify that musiquarium can finish authorizing your account with your musiquarium profile</p>
+                          {% csrf_token %}
+                          <div class="form-group">
+                            <label for="email"><strong>Verification Key</strong></label>
+                              <input class="form-control" placeholder="N/A" name="verifier">
+                          </div>
+                          <button class="btn btn-primary" type="submit" name="verify" style="background: #eda04f;">Submit Key</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
+              </div>
         <footer class="bg-white sticky-footer">
             <div class="container my-auto">
                 <div class="text-center my-auto copyright"><span>Copyright © musiquarium 2020</span></div>
