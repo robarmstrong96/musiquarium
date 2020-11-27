@@ -6,7 +6,7 @@ from urllib.parse import parse_qsl
 from urllib.parse import urlparse
 from enum import Enum, unique
 from ratelimiter import RateLimiter
-from library.add_songs import add_song_musicbrainz
+from library.add_songs import add_song_musicbrainz, add_song_discogs
 from acrcloud.recognizer import ACRCloudRecognizer
 
 ''' Global variables '''
@@ -16,10 +16,6 @@ sys.path.append("../")
 
 # logger for logging debug information
 logger = logging.getLogger("mylogger")
-
-#logging.basicConfig(level=logging.DEBUG)
-# optionally restrict musicbrainzngs output to INFO messages
-#logging.getLogger("musicbrainzngs")
 
 # grabs .env information
 environ.Env.read_env()
@@ -33,12 +29,6 @@ _pt = _env("PERSONAL_TOKEN")
 
 # registered application name represented as a string
 user_agent = 'musiquarium/0.1'
-
- # helps with limiting api calls to the discogs api
-discogs_limiter = RateLimiter(max_calls=3, period=60)
-
- # rate limiter used for limiting api calls to the musicbrainz api
-musicbrains_limiter = RateLimiter(max_calls=1, period=3)
 
 # enums for different media detection methods
 class Detection(Enum):
@@ -67,12 +57,11 @@ def musiq_match_song(detection, file_path):
     '''
 
     if (detection == Detection.MUSICBRAINZS):
-        # initial media matching with musicbrains audio fingerprinting service
         return _musicbrainz_match(file_path, _env('MUSICBRAINZ_API_KEY'))
     elif (detection == Detection.ACRCLOUD):
         return _acrcloud_match(file_path)
     elif (detection == Detection.METADATA):
-        x = 1 # temp value
+        return
 
 def musiq_retrieve_song(song_metadata, database, match, user):
     '''
@@ -89,7 +78,7 @@ def musiq_retrieve_song(song_metadata, database, match, user):
     if (database == Database.MUSICBRAINZ):
         return _musicbrainz_retrieval(song_metadata, match, user)
     elif (database == Database.DISCOGS):
-        return _discogs_retrieval(user) # for testing
+        return _discogs_retrieval(song_metadata, match, user)
 
 
 ''' Matching and detection functionality '''
@@ -105,7 +94,8 @@ def _musicbrainz_match(file_dir, API_KEY): # Uses chromaprint and pyacousid to d
             list = [('score', score), ('recording_id', recording_id), ('title', title),
             ('artists', dict([('artist', artist)])), ('albums', dict([('album', 'Unknown'),
             ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
-            ('file_path', file_dir), ('track_number', 0), ('json_data', None)]
+            ('file_path', file_dir), ('track_number', 0), ('json_data', None),
+            ('genres', dict([('genre', 'Unknown Genre')]))]
             song_metadata.append(('song', dict(list)))
     except Exception as e:
         logger.error(f"Error with {file_dir}: {e}")
@@ -242,6 +232,7 @@ def _acrcloud_match(file_path):
 
     # reads given json formatted metadata into python dict
     metadata = json.loads(matcher.recognize_by_file(file_path, 0))
+
     song_metadata = []
 
     #logger.info(f"matching {metadata}")
@@ -286,14 +277,68 @@ def _acrcloud_match(file_path):
     # returns a dict of collected song data in a python dictionary
     return dict([next(iter(song_metadata))])
 
-def _discogs_retrieval(user):
+def _discogs_retrieval(song_metadata, match, user):
     """
         Grabs discogs metadata for given user.
     """
+    # Configures client
     client = discogs_create_new_client(user)
-    logger.info(f"Account: {client.identity()}")
-    results = client.search('Stockholm By Night', type='release')
-    logger.info(results[0].artists[0])
+    # logger.info(f"Account: {client.identity()}")
+
+    # Retrieval based by matching methodology
+    if (match == Detection.MUSICBRAINZS or match == Detection.ACRCLOUD):
+        #logger.info(song_metadata)
+        image_path = "./assets/img/default/note.png"
+        search_results = client.search(song_metadata['song']['title'], type='release',
+        artist=song_metadata['song']['artists']['artist'])
+
+        release_list = []
+
+        if (len(search_results) > 0): # successfully obtained results
+            for release in search_results:
+                logger.info(f'\n\t== discogs-id {release.id} ==')
+                logger.info(f'\tArtist\t: {", ".join(artist.name for artist in release.artists)}')
+                logger.info(f'\tTitle\t: {release.title}')
+                logger.info(f'\tYear\t: {release.year}')
+                logger.info(f'\tLabels\t: {", ".join(label.name for label in release.labels)}')
+                logger.info(f'\tStyles\t: {", ".join(style for style in release.styles)}\n')
+                with open(f"json_temp/example.json", "w") as json_file:
+                    json_file.write(json.dumps(release.data, indent=4))
+                #logger.info(f'\tSong Title?\t: {info}\n')
+
+                release_list.append(dict([('album', release.title),
+                ('discogs_id', release.id),
+                ('release_date', release.year),
+                ('release_label', ", ".join(label.name for label in release.labels))]))
+
+                image_binary = release.images[0]['uri']
+                content, resp = client._fetcher.fetch(None, 'GET', image_binary,
+                headers={'User-agent': client.user_agent})
+
+                with open(f"./assets/img/album_artwork/{release.title} - {release.id}.png", "wb")  as image:
+                    image_path = f"./assets/img/album_artwork/{release.title} - {release.id}.png"
+                    image.write(content)
+
+            # modifies dict entry 'albums' information
+            song_metadata['song']['albums'] = dict([('albums', release_list)])
+            # modifies dict entry 'artists'
+            song_metadata['song']['artists']['artist'] = ", ".join(artist.name for artist in release.artists)
+            # modifies dict entry 'genres'
+            song_metadata['song']['genres']['genre'] = ", ".join(style for style in release.styles)
+            song_metadata['song']['genres']['genre'] = song_metadata['song']['genres']['genre'].join(genre for genre in release.genre)
+
+            add_song_discogs(song_metadata, user, image_path)
+        else: # no search results, keeping matched data
+            release_list.append(dict([('album', 'Unknown'),
+            ('discogs_id', 'Unknown'),
+            ('release_date', 'Unknown'),
+            ('release_label', 'Unknown')]))
+            # modifies dict entry 'albums' information
+            song_metadata['song']['albums'] = dict([('albums', release_list)])
+            # attempts to add song metadata to musiquarium database
+            add_song_discogs(song_metadata, user, image_path)
+    elif (match == Detection.METADATA):
+        return
 
 def discogs_create_new_client(user):
     """
@@ -304,7 +349,7 @@ def discogs_create_new_client(user):
             Musiquarium user which the discogs client will be configured with.
     """
     token, secret = user.profile.get_discogs_info()
-    logger.info(f"token: {token} and secret: {secret}")
+    #logger.info(f"token: {token} and secret: {secret}")
     client = discogs_client.Client(user_agent, consumer_key=_ck,
     consumer_secret=_cs, token=token, secret=secret)
     return client

@@ -95,7 +95,7 @@ class Song(models.Model):
     json_item = models.CharField(max_length=4000, blank=True, null=True)
 
     # Stored File Information
-    album_artwork = models.ImageField(upload_to="img/album_artwork/", default="img/default/null.png", blank=True, null=True)
+    album_artwork = models.ImageField(upload_to="img/album_artwork/", default="img/default/note.png", blank=True, null=True)
     duration = models.IntegerField(_('Song duration in seconds'),editable=False,default=0)
     file_location = models.FileField(_('File Location'), max_length=512, null=True)
 
@@ -116,7 +116,7 @@ class Song(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        unique_together = (('artist', 'album','title'),)
+        unique_together = (('file_location'),)
         db_table = 'library_song'
         verbose_name = ("Song")
         verbose_name_plural = ("Songs")

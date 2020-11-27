@@ -1,6 +1,5 @@
 import os, sys, stat, subprocess, logging, time, pathlib, queue
 from library.detection_music import Detection, Database # relative import
-from library.add_songs import add_songs_to_database # relative import
 from ratelimiter import RateLimiter
 from queue import Queue
 

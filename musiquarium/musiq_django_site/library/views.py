@@ -18,6 +18,9 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import RegistrationForm, DiscogzAPIForm, ImageUploadForm, BulkInitilization
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core import serializers
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 logger = logging.getLogger("mylogger")
@@ -127,8 +130,10 @@ def table(request):
     """ table html request """
     song_list = Song.objects.filter(profile=request.user.profile)
 
-    for song in song_list:
-        logger.info(song.file_location.__str__())
+    if request.method == "POST":
+        logger.info(request.POST)
+    #for song in song_list:
+    #    logger.info(song.file_location.__str__())
 
     return render(request, 'table.html', {'page_obj': song_list,
     'size': song_list.count(), 'profile': request.user.profile})
@@ -257,3 +262,29 @@ def update_user_profile(request):
         request.user.last_name = request.POST['last_name']
     #request.user.profile.save()
     request.user.save()
+
+@csrf_exempt
+def save_song(request):
+    file_location = request.POST['id']
+    type = request.POST['type']
+    value = request.POST['value']
+    logger.info(file_location)
+    song = Song.objects.get(file_location=file_location)
+
+    if type == 'artist':
+        song.artist = value
+
+    if type == 'album':
+        song.album = value
+
+    if type == 'title':
+        song.title = value
+
+    if type == 'release_date':
+        song.release_date = value
+
+    if type == 'genre':
+        song.genre = value
+
+    song.save()
+    return JsonResponse({"success":"Updated"})

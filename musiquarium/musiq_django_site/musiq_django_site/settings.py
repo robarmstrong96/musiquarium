@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_extensions',
     'notifications',
+    'rest_framework_datatables',
+    'rest_framework_datatables_editor'
     #'library.utils.add_songs',
     #'library.utils.test_run',
     #'library.utils.detection_music',
@@ -68,6 +70,19 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'musiq_django_site.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables_editor.renderers.DatatablesRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_datatables_editor.filters.DatatablesFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables_editor.pagination.DatatablesPageNumberPagination',
+    'PAGE_SIZE': 50,
+}
 
 TEMPLATES = [
     {

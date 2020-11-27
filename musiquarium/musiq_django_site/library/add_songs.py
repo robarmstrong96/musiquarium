@@ -6,13 +6,7 @@ from django.db import models
 # logger for logging debug information
 logger = logging.getLogger("mylogger")
 
-def add_songs_to_database(songs):
-    for song in songs:
-        if (not song[2] and not song[3]):
-            if(Song.objects.filter(title = song[2], artist = song[3]).exists() == False):
-                temp = Song(title = song[2], file_size = 0, duration = 1, artist = song[3])
-                logger.info(temp)
-                temp.save()
+""" Musicbrainz metadata retrieval | Database updating """
 
 def add_song_musicbrainz(song_metadata, user):
     """
@@ -25,6 +19,7 @@ def add_song_musicbrainz(song_metadata, user):
         new, created = Song.objects.update_or_create(
                 title = song_metadata['song']['title'],
                 artist = song_metadata['song']['artists']['artist'],
+                file_location = song_metadata['song']['file_path'],
                 defaults={
                     "title": song_metadata['song']['title'],
                     "album": album,
@@ -38,13 +33,12 @@ def add_song_musicbrainz(song_metadata, user):
         if (created):
             new.save()
             #messages.success(request, f"Song \'{song_metadata['song']['title']}\' updated")
-            logger.info("New song, creating...")
+            #logger.info("New song, creating...")
         else:
             new.save()
             #messages.success(request, f"Song \'{song_metadata['song']['title']}\' added")
-            logger.info("Old song, updating...")
+            #logger.info("Old song, updating...")
         #logger.info("Done.")
-
     except Exception as e:
         logger.error(f"Error while adding \'{song_metadata['song']['title']}\' musicbrainz song instance to database: {e}")
 
@@ -66,3 +60,43 @@ def __musicbrainz_album_cover_grab(release, id):
     except Exception as e:
         logger.error(f"\t[Unable to get cover art for {release}!: {e}]")
         return "../assets/img/default/null.png"
+
+""" Discogs metadata retrieval | Database updating """
+
+def add_song_discogs(song_metadata, user, image_path):
+    """
+        Creates or updates song with given information for specific user.
+        If song exists, created value is false. Otherwise, the song exists and created is true.
+    """
+    # If song already exists, update all information
+    #try:
+    album, id, release_date, label = __get_discogs_release(song_metadata['song']['albums'])
+    new, created = Song.objects.update_or_create(
+            title = song_metadata['song']['title'],
+            artist = song_metadata['song']['artists']['artist'],
+            file_location = song_metadata['song']['file_path'],
+            defaults={
+                "title": song_metadata['song']['title'],
+                "genre": song_metadata['song']['genres']['genre'],
+                "album": album,
+                "artist": song_metadata['song']['artists']['artist'],
+                "profile": user.profile,
+                "release_date": release_date,
+                "detection_method": "Discogs",
+                "album_artwork": image_path,
+                "json_item": json.dumps(song_metadata),
+                "file_location": song_metadata['song']['file_path']})
+    if (created):
+        new.save()
+        logger.info("New song, creating...")
+    else:
+        new.save()
+        logger.info("Old song, updating...")
+
+    #except Exception as e:
+    #    logger.error(f"Error while adding \'{song_metadata['song']['title']}\' discogs song instance to database: {e}")
+
+def __get_discogs_release(albums):
+    for item in albums.values():
+        for album in item:
+            return album['album'], album['discogs_id'], album['release_date'], album['release_label']

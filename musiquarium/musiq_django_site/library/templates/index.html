@@ -37,11 +37,11 @@
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <!--form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                             <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for page...">
                                 <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
                             </div>
-                        </form>
+                        </form-->
                         <ul class="nav navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
@@ -52,7 +52,7 @@
                                     </form>
                                 </div>
                             </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
+                            <!--li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">0</span><i class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
                                         <h6 class="dropdown-header">alerts center</h6>
@@ -62,13 +62,17 @@
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
-                            </li>
+                            </li-->
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.username }}</span><img class="rounded float-left img-profile" src="{{ profile.avatar }}"></a>
                                     <div
-                                        class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
-                                        <a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a>
+                                        class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                        <a class="dropdown-item" href="{% url 'profile' %}">
+                                          <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
+                                        <a class="dropdown-item" href="{% url 'index' %}">
+                                          <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
+                                        <!--a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a-->
                                             <div class="dropdown-divider"></div><a method="POST" class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
                                 </div>
                             </li>
@@ -94,14 +98,14 @@
                     <div class="card-body tab-pane container-fluid active" id="home">
                         <h4 class="card-title text-center">Library Setup</h4>
                         <p class="card-text text-center"> Set the default matching method and metadata source for your music library. </p>
-                        <div class="card-group" style="max-height:400px">
-                          <div class="card" style="height: 200px">
-                            <div class="card-body" style="height: 200px">
+                        <div class="card-group" style="max-height:400rem">
+                          <div class="card" style="height: 300px">
+                            <div class="card-body" style="height: 250rem">
                               <div>
                                 <h4 class="card-title text-center">Music Collection Matching Method</h4>
                                 <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
                               </div>
-                              <div class="dropdown text-center" style="position: absolute; bottom: 50px; align-items: center;">
+                              <div class="dropdown text-center" style="position: absolute; bottom: 3rem; align-items: center;">
                                 <select class="dropdown-menu custom-select mr-md-3" id="match" name="match">
                                   <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
                                   <option value="ARCloud" class="form-control" type="select">ARCloud</option>
@@ -111,11 +115,12 @@
                             </div>
                           </div>
                           <div class="card" style="display: flex; justify-content: center; align-items: center;">
-                              <div class="card-body" style="max-height: 100rem">
+                              <div class="card-body" style="max-height: 250rem">
                                   <h4 class="card-title text-center">Music Data Source</h4>
                                   <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
+                                  <p class="card-text text-center">NOTE: If attempting to use Discogs, you MUST first configure Discogs in order for it to work. To do so, visit your profile page and follow the steps to configure Discogs with your personal Discogs account.</p>
                                   <div class="dropdown text-center" style="position: absolute; bottom: 50px;">
-                                    <select class="dropdown-menu custom-select mr-md-3" id="metadata" name="metadata">
+                                    <select class="dropdown-menu custom-select mr-md-3" id="metadata" name="metadata" style="position: absolute; bottom: 3rem; align-items: center;">
                                       <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
                                       <option value="Discogs" class="form-control" type="select">Discogs</option>
                                     </select>
@@ -134,13 +139,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title text-center"> Music File Location </h4>
-                                    <p class="card-text text-center">Here you will select the location where your media library location is located so that musiquarium may scan and build your library.</p>
+                                    <p class="card-text text-center">Here you will select the folder location where your media library location is located so that musiquarium may scan and build your library. Simply type/paste the directory in the below field.</p>
+                                    <p class="card-text text-center">NOTE: Insert the <u><strong>absolute file path</strong></u> of your music directory here.</p>
                                     <div><p id="output"></p></div>
                                     <div class="input-group mb-3">
                                       <input type="text" class="form-control" aria-label="Music Collection Library Directory" id="file" name="file" placeholder="Enter file directory here..."></input>
-                                      <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" id="Check_File" name="init" type="button">Check Directory</button>
-                                      </div>
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +159,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title text-center text-center"> Initialization </h4>
-                                    <p class="card-text text-center text-center">Press the button below to start the Initialization process.</p>
+                                    <p class="card-text text-center text-center">If all the previous steps have been completed properly, you can now press the button below to start the Initialization process. If not, go back and complete all steps appropiately.</p>
                                     <div class="text-center">
                                       <button class="btn btn-primary" type="submit" value="init" style="background: #eda04f;">Initialize Library</button>
                                     </div>
