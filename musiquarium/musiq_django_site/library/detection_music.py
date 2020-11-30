@@ -5,17 +5,12 @@ import sys
 import environ
 import logging
 import discogs_client
-import _thread
-import threading
 import musicbrainzngs
 import json
 import oauth2 as oauth
+import music_tag
 from discogs_client.exceptions import HTTPError
-from urllib import request
-from urllib.parse import parse_qsl
-from urllib.parse import urlparse
 from enum import Enum, unique
-from ratelimiter import RateLimiter
 from library.add_songs import add_song_musicbrainz, add_song_discogs
 from acrcloud.recognizer import ACRCloudRecognizer
 
@@ -77,7 +72,7 @@ def musiq_match_song(detection, file_path):
     elif (detection == Detection.ACRCLOUD):
         return _acrcloud_match(file_path)
     elif (detection == Detection.METADATA):
-        return
+        metadata_grab(file_path)
 
 
 def musiq_retrieve_song(song_metadata, database, match, user):
@@ -101,7 +96,26 @@ def musiq_retrieve_song(song_metadata, database, match, user):
 ''' Matching and detection functionality '''
 
 
+def metadata_grab(file_dir):
+    song_metadata = []
+    try:
+        logger.info(f"File: {file_dir} and type {type(file_dir)}")
+        grab = music_tag.load_file(file_dir)
+        logger.info(grab['title'])
+        list = [('title', grab['title']), ('artists', dict([('artist', grab['artist']),
+        ('artist', grab['albumartist'])])), ('albums', dict([('album', grab['album']),
+        ('album_musicbrains_id', "N/A"), ('release_date', grab['year'])])),
+        ('file_path', file_dir), ('track_number', grab['track_number']), ('json_data', grab),
+        ('genres', dict([('genre',  grab['genre'])]))]
+        song_metadata.append(('song', dict(list)))
+    except:
+        logger.error(f"Unable to parse [{file_dir}] metadata")
+
+    return dict(song_metadata)
+
 # Uses chromaprint and pyacousid to detect song and return detected song information
+
+
 def _musicbrainz_match(file_dir, API_KEY):
     """
         Function which deals with audio fingerprinting given songs and
@@ -142,7 +156,7 @@ def _musicbrainz_retrieval(song_metadata, match_method, user):
 
     # if the specified song was matched with the musicbrains audio fingerprinting service
     if match_method == Detection.MUSICBRAINZS:
-        #try:
+        # try:
         recording_search_result = musicbrainzngs.get_recording_by_id(
             song_metadata['song']['recording_id'],
             includes=["tags", "releases", "discids"])
@@ -181,7 +195,7 @@ def _musicbrainz_retrieval(song_metadata, match_method, user):
         # given information
         add_song_musicbrainz(song_metadata, user)
 
-        #except Exception as e:
+        # except Exception as e:
         #    logger.error(f"Error while grabbing musicbrainz information: {e}")
 
     # if the specified song was matched with the ARCloud audio fingerprinting service

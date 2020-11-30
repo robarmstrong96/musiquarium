@@ -66,7 +66,7 @@
                   </form>
                 </div>
               </li>
-              <li class="nav-item dropdown no-arrow mx-1">
+              <!--li class="nav-item dropdown no-arrow mx-1">
                 {% if messages %}
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">1+</span><i class="fas fa-bell fa-fw"></i></a>
                   {% else %}
@@ -76,33 +76,22 @@
                       <h6 class="dropdown-header">musiquarium notifications</h6>
                       {% if messages %}
                       {% for message in messages %}
-                      <a class="d-flex align-items-center dropdown-item" href="#">
-                        <!--div class="mr-3">
+                      <a class="d-flex align-items-center dropdown-item del-msg" href="#">
+                        <div class="mr-3">
                           <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                        </div-->
-                        <div class="alert alert-dismissible {{ message.pk }}" role="alert">
+                        </div>
+                        <div class="alert alert-dismissible message {{ message.pk }}" role="alert">
                           <strong>{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!</strong> {{ message }}
                         </div>
-                        <button id="test-delete" type="button" class="close" data-dismiss="alert" aria-hidden="true" aria-label="Close" close-href="{% url 'delete_message' %}">
-                          <span aria-hidden="true">&times;</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true" aria-label="Close" close-href="{% url 'delete_message' %}">
+                          <span class="del-msg" aria-hidden="true">&times;</span>
                         </button>
-                        <script type="text/javascript">
-                          $(document).ready(function() {
-                            $("#test_delete").click(function() {
-                              delete();
-                            });
-                          });
-
-                          function delete() {
-                            $("# {{ message.pk }}").delete();
-                          }
-                        </script>
                       </a>
                       {% endfor %}
                       {% endif %}
                     </div>
                   </div>
-              </li>
+              </li-->
               <div class="d-none d-sm-block topbar-divider"></div>
               <li class="nav-item dropdown no-arrow" name="spaghetti">
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile }}</span><img
@@ -280,14 +269,14 @@
     });
   </script>
   <script>
-    $("a.close[close-href]").click(function(e) {
-      e.preventDefault();
-      $.post($(this).attr("close-href"), "", function() {
-        $(this).remove();
-      });
+    $(document).ready(function() {
+        // messages timeout for 10 sec
+        setTimeout(function() {
+            $('.message').fadeOut('slow');
+        }, 10000); // <-- time in milliseconds, 1000 =  1 sec
     });
   </script>
-  <script src="{% static "close-alerts.js" %}"></script>
+
   {% endblock js %}
 
 </body>
