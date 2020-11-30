@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os, environ
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
+
+MESSAGE_STORAGE = 'messages_extends.storages.FallbackStorage'
 
 # reading .env file
 environ.Env.read_env()
@@ -38,6 +45,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+ASGI_APPLICATION = "musiq_django_site.asgi.application"
 
 # Application definition
 
@@ -52,8 +60,10 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_extensions',
     'notifications',
+    'channels',
     'rest_framework_datatables',
-    'rest_framework_datatables_editor'
+    'rest_framework_datatables_editor',
+    'messages_extends',
     #'library.utils.add_songs',
     #'library.utils.test_run',
     #'library.utils.detection_music',

@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('library/', include('library.urls')), # from library app
     path('', include('library.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('', include('messages_extends.urls'))
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 

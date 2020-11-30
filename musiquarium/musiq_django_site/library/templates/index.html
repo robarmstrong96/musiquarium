@@ -4,201 +4,224 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - musiquarium</title>
-    <meta name="description" content="a site for organizing your collection of music.">
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}"> <!-- /assets/bootstrap/css/bootstrap.min.css-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="{% static 'css/toast.css' %}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Dashboard - musiquarium</title>
+  <meta name="description" content="a site for organizing your collection of music.">
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}"> <!-- /assets/bootstrap/css/bootstrap.min.css-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+  <link rel="stylesheet" href="{% static 'css/toast.css' %}">
 </head>
 
 <body id="page-top">
-    <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: #eda04f;">
-            <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-file-audio"></i></i></div>
-                    <div class="sidebar-brand-text mx-3"><span class="text-lowercase">musiquarium</span></div>
-                </a>
-                <hr class="sidebar-divider my-0">
-                <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}"><i class="fas fa-cogs"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'table' %}"><i class="fas fa-table"></i><span>Library</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login_user' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-circle"></i><span>Register</span></a></li>
-                </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
-            </div>
-        </nav>
-        <div class="d-flex flex-column" id="content-wrapper">
-            <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <!--form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+  <div id="wrapper">
+    <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: #eda04f;">
+      <div class="container-fluid d-flex flex-column p-0">
+        <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+          <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-file-audio"></i></i></div>
+          <div class="sidebar-brand-text mx-3"><span class="text-lowercase">musiquarium</span></div>
+        </a>
+        <hr class="sidebar-divider my-0">
+        <ul class="nav navbar-nav text-light" id="accordionSidebar">
+          <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}"><i class="fas fa-cogs"></i><span>Dashboard</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'table' %}"><i class="fas fa-table"></i><span>Library</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'login_user' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-circle"></i><span>Register</span></a></li>
+        </ul>
+        <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+      </div>
+    </nav>
+    <div class="d-flex flex-column" id="content-wrapper">
+      <div id="content">
+        <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+          <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+            <!--form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                             <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for page...">
                                 <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
                             </div>
                         </form-->
-                        <ul class="nav navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
-                                    <form class="form-inline mr-auto navbar-search w-100">
-                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </li>
-                            <!--li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">0</span><i class="fas fa-bell fa-fw"></i></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6>
-
-                                        <a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a></div>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
-                            </li-->
-                            <div class="d-none d-sm-block topbar-divider"></div>
-                            <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.username }}</span><img class="rounded float-left img-profile" src="{{ profile.avatar }}"></a>
-                                    <div
-                                        class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="{% url 'profile' %}">
-                                          <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
-                                        <a class="dropdown-item" href="{% url 'index' %}">
-                                          <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
-                                        <!--a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a-->
-                                            <div class="dropdown-divider"></div><a method="POST" class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
-                                </div>
-                            </li>
-                        </ul>
+            <ul class="nav navbar-nav flex-nowrap ml-auto">
+              <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                  <form class="form-inline mr-auto navbar-search w-100">
+                    <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                      <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
                     </div>
-                </nav>
+                  </form>
+                </div>
+              </li>
 
-            {% if init_import %}
-            <form method="POST">
-            {% csrf_token %}
-              <div class="container-fluid">
-                <div class="card">
-                  <div class="card-header">
-                      <ul class="nav nav-tabs card-header-tabs">
-                          <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#home">Default Library Settings</a></li>
-                          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu1"> Music File Directory </a></li>
-                          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu2"> Final Step </a></li>
-                      </ul>
+              <li class="nav-item dropdown no-arrow mx-1">
+                {% if messages %}
+                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">1+</span><i class="fas fa-bell fa-fw"></i></a>
+                  {% else %}
+                  <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter"></span><i class="fas fa-bell fa-fw"></i></a>
+                    {% endif %}
+                    <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
+                      <h6 class="dropdown-header">musiquarium notifications</h6>
+                      <a class="d-flex align-items-center dropdown-item" href="#">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="mr-3">
+                          <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
+                        </div>
+                        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                          <strong>{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!</strong> {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                      </a>
+                    </div>
                   </div>
-                  <div class="tab-content">
-                    <!-- First Tab -->
+              </li>
+              <div class="d-none d-sm-block topbar-divider"></div>
+              <li class="nav-item dropdown no-arrow">
+                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.username }}</span><img
+                      class="rounded float-left img-profile" src="{{ profile.avatar }}"></a>
+                  <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                    <a class="dropdown-item" href="{% url 'profile' %}">
+                      <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
+                    <a class="dropdown-item" href="{% url 'index' %}">
+                      <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
+                    <!--a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Activity log</a-->
+                    <div class="dropdown-divider"></div><a method="POST" class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-                    <div class="card-body tab-pane container-fluid active" id="home">
-                        <h4 class="card-title text-center">Library Setup</h4>
-                        <p class="card-text text-center"> Set the default matching method and metadata source for your music library. </p>
-                        <div class="card-group" style="max-height:400rem">
-                          <div class="card" style="height: 300px">
-                            <div class="card-body" style="height: 250rem">
-                              <div>
-                                <h4 class="card-title text-center">Music Collection Matching Method</h4>
-                                <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
-                              </div>
-                              <div class="dropdown text-center" style="position: absolute; bottom: 3rem; align-items: center;">
-                                <select class="dropdown-menu custom-select mr-md-3" id="match" name="match">
-                                  <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
-                                  <option value="ARCloud" class="form-control" type="select">ARCloud</option>
-                                  <option value="Metadata" class="form-control" type="select">Metadata</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card" style="display: flex; justify-content: center; align-items: center;">
-                              <div class="card-body" style="max-height: 250rem">
-                                  <h4 class="card-title text-center">Music Data Source</h4>
-                                  <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
-                                  <p class="card-text text-center">NOTE: If attempting to use Discogs, you MUST first configure Discogs in order for it to work. To do so, visit your profile page and follow the steps to configure Discogs with your personal Discogs account.</p>
-                                  <div class="dropdown text-center" style="position: absolute; bottom: 50px;">
-                                    <select class="dropdown-menu custom-select mr-md-3" id="metadata" name="metadata" style="position: absolute; bottom: 3rem; align-items: center;">
-                                      <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
-                                      <option value="Discogs" class="form-control" type="select">Discogs</option>
-                                    </select>
-                                  </div>
-                              </div>
-                          </div>
+        {% if init_import %}
+        <form method="POST">
+          {% csrf_token %}
+          <div class="container-fluid">
+            <div class="card">
+              <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#home">Default Library Settings</a></li>
+                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu1"> Music File Directory </a></li>
+                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu2"> Final Step </a></li>
+                </ul>
+              </div>
+              <div class="tab-content">
+                <!-- First Tab -->
+
+                <div class="card-body tab-pane container-fluid active" id="home">
+                  <h4 class="card-title text-center">Library Setup</h4>
+                  <p class="card-text text-center"> Set the default matching method and metadata source for your music library. </p>
+                  <div class="card-group" style="max-height:400rem">
+                    <div class="card" style="height: 300px">
+                      <div class="card-body" style="height: 250rem">
+                        <div>
+                          <h4 class="card-title text-center">Music Collection Matching Method</h4>
+                          <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
+                        </div>
+                        <div class="dropdown text-center" style="position: absolute; bottom: 3rem; align-items: center;">
+                          <select class="dropdown-menu custom-select mr-md-3" id="match" name="match">
+                            <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
+                            <option value="ARCloud" class="form-control" type="select">ARCloud</option>
+                            <option value="Metadata" class="form-control" type="select">Metadata</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
-
-                    <!-- Second Tab -->
-
-                    <div class="card-body tab-pane container fade" id="menu1">
-                        <h4 class="card-title text-center">Library Setup</h4>
-                        <p class="card-text text-center"> Set the location of your music collection. </p>
-                        <div class="card-group">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title text-center"> Music File Location </h4>
-                                    <p class="card-text text-center">Here you will select the folder location where your media library location is located so that musiquarium may scan and build your library. Simply type/paste the directory in the below field.</p>
-                                    <p class="card-text text-center">NOTE: Insert the <u><strong>absolute file path</strong></u> of your music directory here.</p>
-                                    <div><p id="output"></p></div>
-                                    <div class="input-group mb-3">
-                                      <input type="text" class="form-control" aria-label="Music Collection Library Directory" id="file" name="file" placeholder="Enter file directory here..."></input>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="card" style="display: flex; justify-content: center; align-items: center;">
+                      <div class="card-body" style="max-height: 250rem">
+                        <h4 class="card-title text-center">Music Data Source</h4>
+                        <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
+                        <p class="card-text text-center">NOTE: If attempting to use Discogs, you MUST first configure Discogs in order for it to work. To do so, visit your profile page and follow the steps to configure Discogs with your personal
+                          Discogs account.</p>
+                        <div class="dropdown text-center" style="position: absolute; bottom: 50px;">
+                          <select class="dropdown-menu custom-select mr-md-3" id="metadata" name="metadata" style="position: absolute; bottom: 3rem; align-items: center;">
+                            <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
+                            <option value="Discogs" class="form-control" type="select">Discogs</option>
+                          </select>
                         </div>
-                    </div>
-
-                    <!-- Last Tab -->
-
-                    <div class="card-body tab-pane container fade" id="menu2">
-                        <h4 class="card-title text-center">Library Setup</h4>
-                        <p class="card-text text-center"> Begin the initialization process </p>
-                        <div class="card-group">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title text-center text-center"> Initialization </h4>
-                                    <p class="card-text text-center text-center">If all the previous steps have been completed properly, you can now press the button below to start the Initialization process. If not, go back and complete all steps appropiately.</p>
-                                    <div class="text-center">
-                                      <button class="btn btn-primary" type="submit" value="init" style="background: #eda04f;">Initialize Library</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </form>
-            {% else %}
-            <div class="card-group" >
-              <div class="card" style="width:100%;float: none;margin: 0 auto">
-                <div class="row">
-                  <div class="col d-flex">
-                    <div class="card-body border rounded border-warning shadow col" style="width:10rem;text-align: center;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
-                      <h4 class="card-title">Song Count</h4>
-                      <p class="card-text text-center">{{song_count}} songs</p>
+
+                <!-- Second Tab -->
+
+                <div class="card-body tab-pane container fade" id="menu1">
+                  <h4 class="card-title text-center">Library Setup</h4>
+                  <p class="card-text text-center"> Set the location of your music collection. </p>
+                  <div class="card-group">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title text-center"> Music File Location </h4>
+                        <p class="card-text text-center">Here you will select the folder location where your media library location is located so that musiquarium may scan and build your library. Simply type/paste the directory in the below field.
+                        </p>
+                        <p class="card-text text-center">NOTE: Insert the <u><strong>absolute file path</strong></u> of your music directory here.</p>
+                        <div>
+                          <p id="output"></p>
+                        </div>
+                        <div class="input-group mb-3">
+                          <input type="text" class="form-control" aria-label="Music Collection Library Directory" id="file" name="file" placeholder="Enter file directory here..."></input>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Last Tab -->
+
+                <div class="card-body tab-pane container fade" id="menu2">
+                  <h4 class="card-title text-center">Library Setup</h4>
+                  <p class="card-text text-center"> Begin the initialization process </p>
+                  <div class="card-group">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title text-center text-center"> Initialization </h4>
+                        <p class="card-text text-center text-center">If all the previous steps have been completed properly, you can now press the button below to start the Initialization process. If not, go back and complete all steps appropiately.
+                        </p>
+                        <div class="text-center">
+                          <button class="btn btn-primary" type="submit" value="init" style="background: #eda04f;">Initialize Library</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          {% endif %}
-
+          </div>
+        </form>
+        {% else %}
+        <div class="card-group">
+          <div class="card" style="width:100%;float: none;margin: 0 auto">
+            <div class="row">
+              <div class="col d-flex">
+                <div class="card-body border rounded border-warning shadow col" style="width:10rem;text-align: center;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
+                  <h4 class="card-title">Song Count</h4>
+                  <p class="card-text text-center">{{song_count}} songs</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <footer class="bg-white sticky-footer">
-            <div class="container my-auto">
-                <div class="text-center my-auto copyright"><span>Copyright © musiquarium 2020</span></div>
-            </div>
-        </footer>
-    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="{% static 'js/theme.js' %}"></script>
-    <script src="{% static 'js/index.js' %}"></script>
-    <script src="{% static 'js/toast.js' %}"></script>
+        {% endif %}
+
+      </div>
+      <footer class="bg-white sticky-footer">
+        <div class="container my-auto">
+          <div class="text-center my-auto copyright"><span>Copyright © musiquarium 2020</span></div>
+        </div>
+      </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+  <script src="{% static 'js/theme.js' %}"></script>
+  <script src="{% static 'js/index.js' %}"></script>
+  <script src="{% static 'js/toast.js' %}"></script>
 </body>
 
 </html>

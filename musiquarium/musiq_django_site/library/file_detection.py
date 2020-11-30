@@ -18,7 +18,7 @@ def directory_scan(detection, database, file_dir):
     song_paths = []
 
     # Detects files in given directory
-    logger.info(f"\'{os.path.abspath(file_dir)}\'")
+    #logger.info(f"\'{os.path.abspath(file_dir)}\'")
     for subdir, dirs, files in os.walk(os.path.abspath(file_dir)):
          for file in files:
             for extension in file_extensions:
@@ -30,7 +30,7 @@ def directory_scan(detection, database, file_dir):
     enum_detect, enum_database = _get_enum_values(detection, database)
 
     # function return
-    logger.info("Done!")
+    #logger.info("Done!")
     return enum_detect, enum_database, song_paths
 
 def _get_enum_values(detection, database):
@@ -49,5 +49,5 @@ def _get_enum_values(detection, database):
     elif database == "Discogs":
         enum_database = Database.DISCOGS
 
-    logger.info(f"{enum_detect} and {enum_database}")
+    #logger.info(f"{enum_detect} and {enum_database}")
     return enum_detect, enum_database
