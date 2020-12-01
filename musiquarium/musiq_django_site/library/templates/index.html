@@ -53,7 +53,7 @@
                 </div>
               </li>
 
-              <li class="nav-item dropdown no-arrow mx-1">
+              <!--li class="nav-item dropdown no-arrow mx-1">
                 {% if messages %}
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">1+</span><i class="fas fa-bell fa-fw"></i></a>
                   {% else %}
@@ -78,7 +78,7 @@
                       </a>
                     </div>
                   </div>
-              </li>
+              </li-->
               <div class="d-none d-sm-block topbar-divider"></div>
               <li class="nav-item dropdown no-arrow">
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.username }}</span><img
@@ -101,7 +101,7 @@
         <form method="POST">
           {% csrf_token %}
           <div class="container-fluid">
-            <div class="card">
+            <div class="card" style="bottom: auto; height: auto;">
               <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs">
                   <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#home">Default Library Settings</a></li>
@@ -112,17 +112,19 @@
               <div class="tab-content">
                 <!-- First Tab -->
 
-                <div class="card-body tab-pane container-fluid active" id="home">
+                <div class="card-body tab-pane container-fluid active" id="home" >
                   <h4 class="card-title text-center">Library Setup</h4>
                   <p class="card-text text-center"> Set the default matching method and metadata source for your music library. </p>
-                  <div class="card-group" style="max-height:400rem">
-                    <div class="card" style="height: 300px">
-                      <div class="card-body" style="height: 250rem">
-                        <div>
+                  <div class="card-group" style="height: auto">
+                    <div class="card" style="display: flex; justify-content: center; align-items: center; height: 40rem">
+                      <div class="card-body">
+                        <div class="card-text">
                           <h4 class="card-title text-center">Music Collection Matching Method</h4>
                           <p class="card-text text-center">When first building your library, musiquarium will use this selected method for recognizing all the music in your library.</p>
+                          <p class="card-text text-center">NOTE: Not all media formats are accepted (i.e. m4a) with the varying detection methods.</p>
+                          <p class="card-text text-center">NOTE: Not all songs will be detected (due to unsupported media formats, unsupported unicode characters, etc...) and may not be added into the musiquarium database. As of now, there is no functionality to add songs manually.</p>
                         </div>
-                        <div class="dropdown text-center" style="position: absolute; bottom: 3rem; align-items: center;">
+                        <div class="dropdown text-center" style="position: absolute; align-items: center; bottom: 3rem">
                           <select class="dropdown-menu custom-select mr-md-3" id="match" name="match">
                             <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
                             <option value="ARCloud" class="form-control" type="select">ARCloud</option>
@@ -131,13 +133,13 @@
                         </div>
                       </div>
                     </div>
-                    <div class="card" style="display: flex; justify-content: center; align-items: center;">
-                      <div class="card-body" style="max-height: 250rem">
+                    <div class="card" style="display: flex; justify-content: center; align-items: center; height: 40rem">
+                      <div class="card-body">
                         <h4 class="card-title text-center">Music Data Source</h4>
                         <p class="card-text text-center">Once your music has been recognized, this option will determine where musiquarium will gather all music library information (i.e. artist name, track number, album art, etc...).</p>
                         <p class="card-text text-center">NOTE: If attempting to use Discogs, you MUST first configure Discogs in order for it to work. To do so, visit your profile page and follow the steps to configure Discogs with your personal
                           Discogs account.</p>
-                        <div class="dropdown text-center" style="position: absolute; bottom: 50px;">
+                        <div class="dropdown text-center" style="position: absolute; bottom: 3rem;">
                           <select class="dropdown-menu custom-select mr-md-3" id="metadata" name="metadata" style="position: absolute; bottom: 3rem; align-items: center;">
                             <option selected value="Musicbrainz" class="form-control">Musicbrainz</option>
                             <option value="Discogs" class="form-control" type="select">Discogs</option>

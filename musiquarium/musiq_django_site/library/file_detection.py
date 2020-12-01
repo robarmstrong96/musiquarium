@@ -23,7 +23,7 @@ def directory_scan(detection, database, file_dir):
          for file in files:
             for extension in file_extensions:
                 if ( extension in (os.path.join(subdir, file)).__str__() ):
-                    logger.info(f"{file} exists!")
+                    #logger.info(f"{file} exists!")
                     song_paths.append(os.path.join(subdir, file))
 
     # returns enum values using 'detection' and 'database' function parameters

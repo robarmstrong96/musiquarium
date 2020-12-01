@@ -129,6 +129,7 @@
                       <th>Genre</th>
                       <th>Album Art</th>
                       <th>File Location</th>
+                      <th>Delete Entry?</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -149,6 +150,13 @@
                         </form>
                       </td>
                       <td style="vertical-align: middle;word-wrap: break-word;" data-type='genre'>{{ song.file_location }}</td>
+                      <form method="POST">
+                        <td>
+                          <button type="submit" class="delete-{{ song.file_location }}" id="{{ song.file_location }}" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </td>
+                      </form>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -161,6 +169,7 @@
                       <th>Genre</th>
                       <th>Album Art</th>
                       <th>File Location</th>
+                      <th>Delete Entry?</th>
                     </tr>
                   </tfoot>
                 </table>

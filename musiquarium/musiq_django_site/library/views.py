@@ -45,7 +45,6 @@ logger = logging.getLogger("mylogger")
         These are the template functions (i.e. html requests)
 """
 
-
 @login_required(login_url='/library/login_user')
 def index(request):
     """View function for home page of site."""
@@ -83,7 +82,7 @@ def index(request):
         match = init_bulk_detect['match']
         metadata = init_bulk_detect['metadata']
         message = f'The bulk import using detection method {match} and the {metadata} database has started.'
-        messages.add_message(request, constants_messages.INFO_PERSISTENT, message)
+        messages.add_message(request, constants_messages.INFO, message)
 
     return render(request, 'index.html', {'profile': request.user.profile,
                                           'init_import': init_import, 'song_count': song_count})
@@ -112,7 +111,7 @@ def profile(request):
     if request.method == "POST" and 'delete' in request.POST:
         # logger.info(f"Deleting all entries for profile {request.user.profile}")
         Song.objects.filter(profile=request.user.profile).delete()
-        messages.add_message(request, constants_messages.SUCCESS_PERSISTENT, "Musiquarium library information successfully deleted.")
+        messages.add_message(request, constants_messages.SUCCESS, "Musiquarium library information successfully deleted.")
 
     # sets profile avatar image
     if request.method == 'POST':
@@ -122,14 +121,14 @@ def profile(request):
                 image = request.FILES.get('avatar')
                 request.user.profile.set_image_path(image.__str__())
                 request.user.profile.save()
+                request.user.save()
             upload_form.save()
-            # logger.info(f"success in file upload: {upload_form}")
+            logger.info(f"success in file upload: {upload_form}")
         else:
+            print('Unable to authenticate')
             logger.error(f"error: {upload_form.errors}")
     else:
         upload_form = ImageUploadForm()
-
-    # logger.info(request.POST)
 
     # configure discogs
     if request.method == 'POST' and 'configure' in request.POST:
@@ -170,7 +169,6 @@ def login_user(request):
     """ login html request """
 
     if request.user.is_authenticated:
-        # logger.info(f"\'{request.user}\' is currently logged in, logging out")
         logout(request)
 
     if request.method == "POST":

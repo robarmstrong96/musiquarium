@@ -52,7 +52,7 @@
                 </div>
               </li>
 
-              <li class="nav-item dropdown no-arrow mx-1">
+              <!--li class="nav-item dropdown no-arrow mx-1">
                 {% if messages %}
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">1+</span><i class="fas fa-bell fa-fw"></i></a>
                   {% else %}
@@ -77,7 +77,7 @@
                       </a>
                     </div>
                   </div>
-              </li>
+              </li-->
               <div class="d-none d-sm-block topbar-divider"></div>
               <li class="nav-item dropdown no-arrow">
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile.user.username }}</span><img
@@ -116,7 +116,7 @@
                               <span aria-hidden="true">&times;</span>
                             </button>
                           </div>
-                          <form method="POST" id="file-upload" enctype="multipart/form-data" novalidate=""> {% csrf_token %}
+                          <form method="POST" id="file-upload" enctype="multipart/form-data"> {% csrf_token %}
                             <div class="modal-body">
                               <div class="file-loading">
                                 {{ upload_form.as_p }}
