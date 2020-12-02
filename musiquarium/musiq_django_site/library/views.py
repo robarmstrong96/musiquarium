@@ -31,10 +31,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib import messages
+#from django.contrib import messages
 from django import template
-from messages_extends import constants as constants_messages
-from django.contrib.messages import get_messages
+#from messages_extends import constants as constants_messages
+#from django.contrib.messages import get_messages
 
 register = template.Library()
 
@@ -48,14 +48,6 @@ logger = logging.getLogger("mylogger")
 @login_required(login_url='/library/login_user')
 def index(request):
     """View function for home page of site."""
-
-    # Checks to see if user has any detected media already. If so, user is
-    # prompted to start the initial bulk library import process.
-    song_count = Song.objects.filter(profile=request.user.profile).count()
-    if song_count <= 0:
-        init_import = True
-    else:
-        init_import = False
 
     # dict used for initial bulk library creation
     init_bulk_detect = {
@@ -79,10 +71,18 @@ def index(request):
         #import_daemon.daemon = True
         #import_daemon.start()
         _bulk_import(request, init_bulk_detect, request.user)
-        match = init_bulk_detect['match']
-        metadata = init_bulk_detect['metadata']
-        message = f'The bulk import using detection method {match} and the {metadata} database has started.'
-        messages.add_message(request, constants_messages.INFO, message)
+        #match = init_bulk_detect['match']
+        #metadata = init_bulk_detect['metadata']
+        #message = f'The bulk import using detection method {match} and the {metadata} database has started.'
+        #messages.add_message(request, constants_messages.INFO, message)
+
+    # Checks to see if user has any detected media already. If so, user is
+    # prompted to start the initial bulk library import process.
+    song_count = Song.objects.filter(profile=request.user.profile).count()
+    if song_count <= 0:
+        init_import = True
+    else:
+        init_import = False
 
     return render(request, 'index.html', {'profile': request.user.profile,
                                           'init_import': init_import, 'song_count': song_count})
@@ -111,7 +111,7 @@ def profile(request):
     if request.method == "POST" and 'delete' in request.POST:
         # logger.info(f"Deleting all entries for profile {request.user.profile}")
         Song.objects.filter(profile=request.user.profile).delete()
-        messages.add_message(request, constants_messages.SUCCESS, "Musiquarium library information successfully deleted.")
+        #messages.add_message(request, constants_messages.SUCCESS, "Musiquarium library information successfully deleted.")
 
     # sets profile avatar image
     if request.method == 'POST':
@@ -123,9 +123,8 @@ def profile(request):
                 request.user.profile.save()
                 request.user.save()
             upload_form.save()
-            logger.info(f"success in file upload: {upload_form}")
         else:
-            print('Unable to authenticate')
+            logger.error('Unable to authenticate')
             logger.error(f"error: {upload_form.errors}")
     else:
         upload_form = ImageUploadForm()
@@ -142,7 +141,7 @@ def profile(request):
             request.user.profile.discogs_access_token = token
             request.user.profile.save()
             request.user.save()
-            messages.add_message(request, messages.INFO, "Discogs has been configured.")
+            # messages.add_message(request, messages.INFO, "Discogs has been configured.")
         except HTTPError:
             print('Unable to authenticate')
             sys.exit(1)
@@ -153,11 +152,11 @@ def profile(request):
 
 @login_required(login_url='/library/login_user')
 def table(request):
-    logger.info(request)
-    storage = get_messages(request)
-    #for message in storage:
-    #    message.delete()
-    #    logger.info(message)
+
+    if request.method == 'POST' and 'delete-song' in request.POST:
+        song_instance = Song.objects.filter(profile=request.user.profile, file_location=request.POST['delete-song'])
+        song_instance.delete()
+
     """ table html request """
     song_list = Song.objects.filter(profile=request.user.profile)
 
@@ -214,15 +213,6 @@ def register(request):
         functions, etc...)
 """
 
-def delete_message(request):
-    logger.info(request)
-    storage = get_messages(request)
-    for message in storage:
-        logger.info(message)
-        message.delete()
-    return render(requets, 'table.html')
-
-
 def _bulk_import(request, init_dict, user):
     match_limiter = RateLimiter(max_calls=1, period=3)
     database_limiter = RateLimiter(max_calls=1, period=3)
@@ -244,22 +234,18 @@ def _bulk_import(request, init_dict, user):
     # given sting values representing matching methods/databases.
     matching, database, files = directory_scan(init_dict['match'],
                                                init_dict['metadata'], init_dict['file_dir'])
-
+   
     # 2) matches the detected songs with preffered matching methodology
     # logger.info("Matching songs...")
-    messages.add_message(request, messages.INFO, "Starting to match data using selected matching methodology...")
     for file in files:
         with match_limiter:
             matched_songs.append(musiq_match_song(matching, file))
-    messages.add_message(request, messages.INFO, "Finished matching data using selected matching methodology.")
 
     # 3) retrieves song metadata from specified database
     # logger.info("Retrieving metadata...")
-    messages.add_message(request, messages.INFO, "Starting to grab metadata from selected database...")
     for match in matched_songs:
         with database_limiter:
             musiq_retrieve_song(match, database, matching, user)
-    messages.add_message(request, messages.INFO, "Finished grabbing metadata from selected database.")
 
     # except Exception as e:
     #    logger.error(f"Error during main bulk import: {e}")
@@ -284,29 +270,24 @@ class BulkImport(Thread):
     def run(self):
         while True:
             try:
-                # logger.info("Starting bulk import...")
                 _bulk_import(self.request, self.metadata, self.user)
             except Exception as e:
-                messages.add_message(self.request, messages.ERROR, "Error during bulk import...")
                 logger.error(f"Error during bulk import in a thread: {e}")
             finally:
-                # logger.info("Finished bulk import!")
-                messages.add_message(self.request, messages.SUCCESS, "Bulk import has finished!")
                 return
 
 
 def update_user_profile(request):
     profile = request.user.profile
     if 'email' in request.POST:
-        # logger.info('email' in request.POST)
-        request.user.email = request.POST['email']
+        if not (request.POST['email'] == ''):
+            request.user.email = request.POST['email']
     if 'first_name' in request.POST:
-        # logger.info('first_name' in request.POST)
-        request.user.first_name = request.POST['first_name']
+        if not (request.POST['first_name'] == ''):
+            request.user.first_name = request.POST['first_name']
     if 'last_name' in request.POST:
-        # logger.info('last_name' in request.POST)
-        request.user.last_name = request.POST['last_name']
-    # request.user.profile.save()
+        if not (request.POST['last_name'] == ''):
+            request.user.last_name = request.POST['last_name']
     request.user.save()
 
 
@@ -315,7 +296,6 @@ def save_song(request):
     file_location = request.POST['id']
     type = request.POST['type']
     value = request.POST['value']
-    # logger.info(file_location)
     song = Song.objects.get(file_location=file_location)
 
     if type == 'artist':

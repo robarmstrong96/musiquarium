@@ -22,7 +22,7 @@ def add_song_musicbrainz(song_metadata, user):
         new, created = Song.objects.update_or_create(
                 title = song_metadata['song']['title'],
                 artist = song_metadata['song']['artists']['artist'],
-                file_location = song_metadata['song']['file_path'],
+                file_location = song_metadata['song']['file_path'], # primary key
                 defaults={
                     "title": song_metadata['song']['title'],
                     "album": albums,
@@ -90,6 +90,7 @@ def add_song_discogs(song_metadata, user, image_path):
     # If song already exists, update all information
     #try:
     album, id, release_date, label = __get_discogs_release(song_metadata['song']['albums'])
+    albums = get_possible_albums(song_metadata['song']['albums'])
     new, created = Song.objects.update_or_create(
             title = song_metadata['song']['title'],
             artist = song_metadata['song']['artists']['artist'],
@@ -97,7 +98,7 @@ def add_song_discogs(song_metadata, user, image_path):
             defaults={
                 "title": song_metadata['song']['title'],
                 "genre": song_metadata['song']['genres']['genre'],
-                "album": album,
+                "album": albums,
                 "artist": song_metadata['song']['artists']['artist'],
                 "profile": user.profile,
                 "release_date": release_date,

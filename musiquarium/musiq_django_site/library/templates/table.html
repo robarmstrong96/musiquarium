@@ -66,32 +66,6 @@
                   </form>
                 </div>
               </li>
-              <!--li class="nav-item dropdown no-arrow mx-1">
-                {% if messages %}
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter">1+</span><i class="fas fa-bell fa-fw"></i></a>
-                  {% else %}
-                  <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="badge badge-danger badge-counter"></span><i class="fas fa-bell fa-fw"></i></a>
-                    {% endif %}
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
-                      <h6 class="dropdown-header">musiquarium notifications</h6>
-                      {% if messages %}
-                      {% for message in messages %}
-                      <a class="d-flex align-items-center dropdown-item del-msg" href="#">
-                        <div class="mr-3">
-                          <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                        </div>
-                        <div class="alert alert-dismissible message {{ message.pk }}" role="alert">
-                          <strong>{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error{% else %}{{ message.tags|title }}{% endif %}!</strong> {{ message }}
-                        </div>
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true" aria-label="Close" close-href="{% url 'delete_message' %}">
-                          <span class="del-msg" aria-hidden="true">&times;</span>
-                        </button>
-                      </a>
-                      {% endfor %}
-                      {% endif %}
-                    </div>
-                  </div>
-              </li-->
               <div class="d-none d-sm-block topbar-divider"></div>
               <li class="nav-item dropdown no-arrow" name="spaghetti">
                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ profile }}</span><img
@@ -135,25 +109,27 @@
                   <tbody>
                     {% for song in page_obj %}
                     <tr scope="row" id="data">
-                      <td class='editable' data-id="{{ song.file_location }}" style="vertical-align: middle" data-type='artist'>{{ song.artist }}</td>
-                      <td class='editable' data-id="{{ song.file_location }}" style="vertical-align: middle" data-type='album'>{{ song.album }}</td>
-                      <td class='editable' data-id="{{ song.file_location }}" style="vertical-align: middle" data-type='title'>{{ song.title }}</td>
-                      <td class='editable' data-id="{{ song.file_location }}" style="vertical-align: middle" data-type='release_date'>{{ song.release_date }}</td>
-                      <td class='editable' data-id="{{ song.file_location }}" style="vertical-align: middle" data-type='genre'>{{ song.genre }}</td>
-                      <td>
+                      <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='artist'>{{ song.artist }}</td>
+                      <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='album'>{{ song.album }}</td>
+                      <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='title'>{{ song.title }}</td>
+                      <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='release_date'>{{ song.release_date }}</td>
+                      <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='genre'>{{ song.genre }}</td>
+                      <td style="text-align:center; vertical-align: middle; word-wrap: break-word;">
                         <form method="POST">
-                          <label for="image">
+                          <label for="image" name="original_image" value="old_image">
                             {% csrf_token %}
-                            <img name="original_image" id="old_image" value="old_image" class="rounded float-left center" style="max-width:128px; max-height:128px;" src=" {{ song.album_artwork }}" />
+                            <img name="original_image" id="old_image" value="old_image" class="rounded float-left center" style="text-align:center; vertical-align: middle; height:4rem; width:4rem; max-width:256px; max-height:256px;" src=" {{ song.album_artwork }}" />
                             <input type="file" name="image" id="image" value="{{ song.file_location }}" style="display:none;" onchange="submit();" />
                           </label>
                         </form>
                       </td>
-                      <td style="vertical-align: middle;word-wrap: break-word;" data-type='genre'>{{ song.file_location }}</td>
+                      <td style="text-align:center; vertical-align: middle; word-wrap: break-word;" data-type='genre'>{{ song.file_location }}</td>
                       <form method="POST">
-                        <td>
-                          <button type="submit" class="delete-{{ song.file_location }}" id="{{ song.file_location }}" data-dismiss="alert" aria-label="Close">
+                        {% csrf_token %}
+                        <td style="text-align:center; vertical-align: middle; word-wrap: break-word;">
+                          <button class="btn btn-danger btn-sm rounded-0" type="submit" data-toggle="tooltip" title="Delete Musiquarium Entry" name="delete-song" value="{{ song.file_location }}">
                             <span aria-hidden="true">&times;</span>
+                            <i class="fa fa-trash"></i>
                           </button>
                         </td>
                       </form>
@@ -251,11 +227,11 @@
       });
 
       function sendToServer(id, value, type) {
-        console.log(id);
-        console.log(value);
-        console.log(type);
+        //console.log(id);
+        //console.log(value);
+        //console.log(type);
         $.ajax({
-            url: "http://127.0.0.1:8000/save_song",
+            url: "/save_song",
             type: "POST",
             data: {
               id: id,
@@ -278,13 +254,18 @@
     });
   </script>
   <script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+  </script>
+  <!--script>
     $(document).ready(function() {
         // messages timeout for 10 sec
         setTimeout(function() {
             $('.message').fadeOut('slow');
         }, 10000); // <-- time in milliseconds, 1000 =  1 sec
     });
-  </script>
+  </script-->
 
   {% endblock js %}
 

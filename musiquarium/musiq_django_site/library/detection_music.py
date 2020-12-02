@@ -9,15 +9,19 @@ import musicbrainzngs
 import json
 import oauth2 as oauth
 import music_tag
+from ratelimiter import RateLimiter
 from discogs_client.exceptions import HTTPError
 from enum import Enum, unique
 from library.add_songs import add_song_musicbrainz, add_song_discogs
 from acrcloud.recognizer import ACRCloudRecognizer
+from django.utils.text import slugify
 
 ''' Global variables '''
 
 # adds parent folder to python path
 sys.path.append("../")
+
+discogs_limiter = RateLimiter(max_calls=30, period=60)
 
 # logger for logging debug information
 logger = logging.getLogger("mylogger")
@@ -72,7 +76,7 @@ def musiq_match_song(detection, file_path):
     elif (detection == Detection.ACRCLOUD):
         return _acrcloud_match(file_path)
     elif (detection == Detection.METADATA):
-        metadata_grab(file_path)
+        return metadata_grab(file_path)
 
 
 def musiq_retrieve_song(song_metadata, database, match, user):
@@ -101,17 +105,23 @@ def metadata_grab(file_dir):
     try:
         # logger.info(f"File: {file_dir} and type {type(file_dir)}")
         grab = music_tag.load_file(file_dir)
-        # logger.info(grab['title'])
-        list = [('title', grab['title']), ('artists', dict([('artist', grab['artist']),
-                ('artist', grab['albumartist'])])), ('albums', dict([('album', grab['album']),
-                ('album_musicbrains_id', "N/A"), ('release_date', grab['year'])])),
-                ('file_path', file_dir), ('track_number', grab['track_number']),
-                ('json_data', grab), ('genres', dict([('genre',  grab['genre'])]))]
+        list = [('title', str(grab['title'])), ('artists', dict([('artist', str(grab['artist'])),
+                ('artist', str(grab['albumartist']))])), ('albums', dict([('album', str(grab['album'])),
+                ('album_musicbrains_id', "N/A"), ('release_date', str(grab['year']))])),
+                ('file_path', file_dir), ('track_number', str(grab['track_number'])),
+                ('json_data', None), ('genres', dict([('genre',  str(grab['genre']))]))]
         song_metadata.append(('song', dict(list)))
     except:
-        logger.error(f"Unable to parse [{file_dir}] metadata")
+        logger.error(f"Error with {file_dir}: {e}")
+        list = [('score', "N/A"), ('recording_id', "N/A"), ('title', "N/A"),
+            ('artists', dict([('artist', "N/A")])), ('albums', dict(
+                [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
+            ('file_path', file_dir), ('track_number', "N/A"), ('json_data', None),
+            ('genres', dict([('genre', 'Unknown Genre')]))]
+        song_metadata.append(('song', dict(list)))
+    finally:
+        return dict(song_metadata)
 
-    return dict(song_metadata)
 
 def _musicbrainz_match(file_dir, API_KEY):
     """
@@ -124,7 +134,7 @@ def _musicbrainz_match(file_dir, API_KEY):
             # logger.info(title)
             list = [('score', score), ('recording_id', recording_id), ('title', title),
                     ('artists', dict([('artist', artist)])), ('albums', dict(
-                    [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
+                        [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
                     ('file_path', file_dir), ('track_number', 0), ('json_data', None),
                     ('genres', dict([('genre', 'Unknown Genre')]))]
             song_metadata.append(('song', dict(list)))
@@ -132,12 +142,13 @@ def _musicbrainz_match(file_dir, API_KEY):
         logger.error(f"Error with {file_dir}: {e}")
         list = [('score', "N/A"), ('recording_id', "N/A"), ('title', "N/A"),
                 ('artists', dict([('artist', "N/A")])), ('albums', dict(
-                [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
+                    [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
                 ('file_path', file_dir), ('track_number', "N/A"), ('json_data', None),
                 ('genres', dict([('genre', 'Unknown Genre')]))]
         song_metadata.append(('song', dict(list)))
     finally:
         return dict(song_metadata)
+
 
 def _musicbrainz_retrieval(song_metadata, match_method, user):
     '''
@@ -188,8 +199,8 @@ def _musicbrainz_retrieval(song_metadata, match_method, user):
 
                 # appends album information in dict format to list
                 release_list.append(dict([('album', release_string),
-                ('album_musicbrains_id', id_string),
-                ('release_date', date_string)]))
+                                          ('album_musicbrains_id', id_string),
+                                          ('release_date', date_string)]))
 
             # modifies dict entry 'albums' information
             song_metadata['song']['albums'] = dict([('albums', release_list)])
@@ -199,56 +210,57 @@ def _musicbrainz_retrieval(song_metadata, match_method, user):
             add_song_musicbrainz(song_metadata, user)
 
         # if the specified song was matched with the ARCloud audio fingerprinting service
-        elif match_method == Detection.ACRCLOUD:
+        elif match_method == Detection.ACRCLOUD or match_method == Detection.METADATA:
+            # searches musicbrainz database with ARCloud data, grabs first search
+            # result
+            recording_search_result = musicbrainzngs.search_recordings(strict=False,
+                                                                       limit=1, query=song_metadata['song']['title'],
+                                                                       artist=song_metadata['song']['artists']['artist'],
+                                                                       recording=song_metadata['song']['title'],
+                                                                       release=song_metadata['song']['albums'].values(
+                                                                       ),
+                                                                       country='US')
 
-             # searches musicbrainz database with ARCloud data, grabs first search
-             # result
-             recording_search_result = musicbrainzngs.search_recordings(strict=False,
-             limit=1, query=song_metadata['song']['title'],
-             artist=song_metadata['song']['artists']['artist'],
-             recording=song_metadata['song']['title'],
-             release=song_metadata['song']['albums'].values(),
-             country='US')
+            release_list = []
 
-             release_list = []
+            # with open(f"json_temp/{song_metadata['song']['title']}.json", "w") as json_file:
+            #    json_file.write(json.dumps(next(iter(recording_search_result['recording-list'])), indent=4))
 
-             # with open(f"json_temp/{song_metadata['song']['title']}.json", "w") as json_file:
-             #    json_file.write(json.dumps(next(iter(recording_search_result['recording-list'])), indent=4))
+            # iterate through albums/releases
+            for recording in recording_search_result['recording-list']:
+                for release in dict(recording)['release-list']:
+                    release_string = "N/A"
+                    id_string = "N/A"
+                    date_string = "N/A"
 
-             # iterate through albums/releases
-             for recording in recording_search_result['recording-list']:
-                 for release in dict(recording)['release-list']:
-                     release_string = "N/A"
-                     id_string = "N/A"
-                     date_string = "N/A"
-
-                     ''' checks if existing data exists in json/meta data,
+                    ''' checks if existing data exists in json/meta data,
                             sets data if exists '''
-                     if ("title" in release):
-                        # if musicbrainz album/release title is in json data...
-                         release_string = release['title']
-                     if ("id" in release):
-                        # if musicbrainz id of album is in given json data...
-                         id_string = release['id']
-                     if ("date" in release):
-                        # if release date of album is in given json data...
+                    if ("title" in release):
+                       # if musicbrainz album/release title is in json data...
+                        release_string = release['title']
+                    if ("id" in release):
+                       # if musicbrainz id of album is in given json data...
+                        id_string = release['id']
+                    if ("date" in release):
+                       # if release date of album is in given json data...
                         date_string = release['date']
 
-                     # appends album information in dict format to list
-                     release_list.append(dict([('album', release_string),
+                    # appends album information in dict format to list
+                    release_list.append(dict([('album', release_string),
                                               ('album_musicbrains_id', id_string),
                                               ('release_date', date_string)]))
 
-             # modifies dict entry 'albums' information
-             song_metadata['song']['albums'] = dict([('albums', release_list)])
+            # modifies dict entry 'albums' information
+            song_metadata['song']['albums'] = dict([('albums', release_list)])
 
-             # modifies/creates 'Song' django model instance with
-             # given information
-             add_song_musicbrainz(song_metadata, user)
+            # modifies/creates 'Song' django model instance with
+            # given information
+            add_song_musicbrainz(song_metadata, user)
 
     except Exception as e:
         add_song_musicbrainz(song_metadata, user)
         logger.error(f"Error while grabbing musicbrainz information: {e}")
+
 
 def _acrcloud_match(file_path):
     '''
@@ -320,7 +332,7 @@ def _acrcloud_match(file_path):
         # returns a dict of collected song data in a python dictionary
         return dict([next(iter(song_metadata))])
     except:
-        return
+        return dict([next(iter(song_metadata))])
 
 
 def _discogs_retrieval(song_metadata, match, user):
@@ -332,54 +344,67 @@ def _discogs_retrieval(song_metadata, match, user):
     # logger.info(f"Account: {client.identity()}")
 
     # Retrieval based by matching methodology
-    if (match == Detection.MUSICBRAINZS or match == Detection.ACRCLOUD):
-        # logger.info(song_metadata)
-        image_path = "./assets/img/default/note.png"
-        search_results = client.search(song_metadata['song']['title'], type='release',
-                                       artist=song_metadata['song']['artists']['artist'])
+    try:
+        if (match == Detection.MUSICBRAINZS or match == Detection.ACRCLOUD or match == Detection.METADATA):
+            # logger.info(song_metadata)
+            image_path = "../assets/img/default/note.png"
+            search_results = client.search(song_metadata['song']['title'], type='release',
+                                           artist=song_metadata['song']['artists']['artist'])
 
-        release_list = []
+            release_list = []
 
-        if (len(search_results) > 0):  # successfully obtained results
-            for release in search_results:
+            if (len(search_results) > 0):  # successfully obtained results
+                genres = []
 
-                release_list.append(dict([('album', release.title),
-                                          ('discogs_id', release.id),
-                                          ('release_date', release.year),
-                                          ('release_label', ", ".join(label.name for label in release.labels))]))
+                for release in search_results:
 
-                image_binary = release.images[0]['uri']
-                content, resp = client._fetcher.fetch(None, 'GET', image_binary,
-                                                      headers={'User-agent': client.user_agent})
+                    release_list.append(dict([('album', release.title),
+                                              ('discogs_id', release.id),
+                                              ('release_date', release.year),
+                                              ('release_label', ", ".join(label.name for label in release.labels))]))
 
-                with open(f"./assets/img/album_artwork/{release.title} - {release.id}.png", "wb") as image:
-                    image_path = f"./assets/img/album_artwork/{release.title} - {release.id}.png"
-                    image.write(content)
+                    image_binary = release.images[0]['uri']
 
-            # modifies dict entry 'albums' information
-            song_metadata['song']['albums'] = dict([('albums', release_list)])
-            # modifies dict entry 'artists'
-            song_metadata['song']['artists']['artist'] = ", ".join(
-                artist.name for artist in release.artists)
-            # modifies dict entry 'genres'
-            song_metadata['song']['genres']['genre'] = ", ".join(
-                style for style in release.styles)
-            if (match == Detection.ACRCLOUD):
-                song_metadata['song']['genres']['genre'] = song_metadata['song']['genres']['genre'].join(
-                    genre for genre in release.genre)
+                    with discogs_limiter:
+                        content, resp = client._fetcher.fetch(None, 'GET', image_binary,
+                                      headers={'User-agent': client.user_agent})
 
-            add_song_discogs(song_metadata, user, image_path)
-        else:  # no search results, keeping matched data
-            release_list.append(dict([('album', 'Unknown'),
-                                      ('discogs_id', 'Unknown'),
-                                      ('release_date', 'Unknown'),
-                                      ('release_label', 'Unknown')]))
-            # modifies dict entry 'albums' information
-            song_metadata['song']['albums'] = dict([('albums', release_list)])
-            # attempts to add song metadata to musiquarium database
-            add_song_discogs(song_metadata, user, image_path)
-    elif (match == Detection.METADATA):
-        return
+                    file_title = slugify(release.title + "-" + str(release.id))
+                    with open(f"./assets/img/album_artwork/{file_title}.png", "wb") as image:
+                        image_path = f"./assets/img/album_artwork/{file_title}.png"
+                        image.write(content)
+
+                # modifies dict entry 'albums' information
+                song_metadata['song']['albums'] = dict([('albums', release_list)])
+                # modifies dict entry 'artists'
+                song_metadata['song']['artists']['artist'] = ", ".join(
+                    artist.name for artist in release.artists)
+                # modifies dict entry 'genres'
+                try:
+                    for style in release.style:
+                        if not style in genres:
+                            genres.append(style)
+                    for genre in release.genre:
+                        if not genre in genres:
+                            genres.append(genre)
+                except:
+                    if not "Unknown Genre" in genres:
+                        genres.append("Unknown Genre")
+
+                song_metadata['song']['genres']['genre'].join(genre for genre in genres)
+
+                add_song_discogs(song_metadata, user, image_path)
+            else:  # no search results, keeping matched data
+                release_list.append(dict([('album', 'Unknown'),
+                                          ('discogs_id', 'Unknown'),
+                                          ('release_date', 'Unknown'),
+                                          ('release_label', 'Unknown')]))
+                # modifies dict entry 'albums' information
+                song_metadata['song']['albums'] = dict([('albums', release_list)])
+                # attempts to add song metadata to musiquarium database
+                add_song_discogs(song_metadata, user, image_path)
+    except:
+        logger.error("Error obtaining discogs information")
 
 
 def discogs_create_new_client(user):

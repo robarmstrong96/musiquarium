@@ -11,6 +11,6 @@ urlpatterns = [
     path('login_user', views.login_user, name='login_user'),
     path('register', views.register, name='register'),
     path('logout', views.logout, name='login'),
-    path('save_song', views.save_song, name='save_song'),
-    path('delete_message', views.delete_message, name='delete_message')
+    path('save_song', views.save_song, name='save_song')
+    #path('delete_message', views.delete_message, name='delete_message')
 ]
