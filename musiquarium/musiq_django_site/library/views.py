@@ -2,14 +2,8 @@ import os
 import sys
 import psycopg2
 import logging
-import _thread
-import threading
-import json
 import pathlib
-import asyncio
-import time
 import discogs_client
-from queue import Queue
 from ratelimiter import RateLimiter
 from threading import Thread, Lock
 from django import forms
@@ -19,7 +13,6 @@ from library.models import Song
 from library.file_detection import directory_scan  # relative import
 from library.detection_music import Detection, Database, musiq_match_song, musiq_retrieve_song, discogs_create_new_client
 from django.views.generic import ListView
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.contrib.auth import logout
@@ -28,15 +21,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import RegistrationForm, DiscogzAPIForm, ImageUploadForm, BulkInitilization
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core import serializers
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-#from django.contrib import messages
-from django import template
-#from messages_extends import constants as constants_messages
-#from django.contrib.messages import get_messages
-
-register = template.Library()
 
 logger = logging.getLogger("mylogger")
 
@@ -112,6 +97,10 @@ def profile(request):
         # logger.info(f"Deleting all entries for profile {request.user.profile}")
         Song.objects.filter(profile=request.user.profile).delete()
         #messages.add_message(request, constants_messages.SUCCESS, "Musiquarium library information successfully deleted.")
+
+    if request.method == "POST" and 'apply' in request.POST:
+        logger.info("Scanningf...")
+        save_metadata(request)
 
     # sets profile avatar image
     if request.method == 'POST':
@@ -221,20 +210,20 @@ def _bulk_import(request, init_dict, user):
     # try:
     # rate limiter used for limiting api calls to the matcher api
     if (init_dict['match'] == Detection.MUSICBRAINZS):
-        match_limiter = RateLimiter(max_calls=1, period=1)
+        match_limiter = RateLimiter(max_calls=3, period=1)
 
     # rate limiter used for limiting api calls to the database api
     if (init_dict['metadata'] == Database.MUSICBRAINZ):
-        database_limiter = RateLimiter(max_calls=1, period=1)
+        database_limiter = RateLimiter(max_calls=3, period=1)
 
     if (init_dict['metadata'] == Database.DISCOGS):
-        database_limiter = RateLimiter(max_calls=60, period=60)
+        database_limiter = RateLimiter(max_calls=60, period=58)
 
     # 1) obtains files and enum values based on given media directory and
     # given sting values representing matching methods/databases.
     matching, database, files = directory_scan(init_dict['match'],
                                                init_dict['metadata'], init_dict['file_dir'])
-   
+
     # 2) matches the detected songs with preffered matching methodology
     # logger.info("Matching songs...")
     for file in files:
@@ -276,7 +265,6 @@ class BulkImport(Thread):
             finally:
                 return
 
-
 def update_user_profile(request):
     profile = request.user.profile
     if 'email' in request.POST:
@@ -290,6 +278,33 @@ def update_user_profile(request):
             request.user.last_name = request.POST['last_name']
     request.user.save()
 
+def save_metadata(request):
+    import music_tag
+    songs = Song.objects.filter(profile=request.user.profile)
+    for song in songs:
+        try:
+            if (os.path.exists(song.file_location.__str__())):
+                current_song = music_tag.load_file(song.file_location.__str__())
+                try:
+                    current_song['title'] = song.title
+                    current_song['album'] = song.album
+                    current_song['artist'] = song.artist
+                    current_song['genre'] = song.genre
+                    if (os.path.exists(song.album_artwork.__str__())):
+                        with open(song.album_artwork.__str__(), 'rb') as img_bin:
+                            current_song['artwork'] = img_bin.read()
+                    try:
+                        current_song['year'] = song.release_date
+                    except:
+                        logger.error(f"Year not correct format {song.release_date}, not changing.")
+                except Exception as e:
+                    raise e
+                finally:
+                    current_song.save()
+            else:
+                logger.error(f"{song} does not exist at given file path")
+        except Exception as e:
+            logger.error(f"Unable to apply metadata changes to {song}: {e}")
 
 @csrf_exempt
 def save_song(request):

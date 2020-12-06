@@ -12,19 +12,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os, environ
-from django.contrib.messages import constants as messages
-
-MESSAGE_TAGS = {
-    messages.ERROR: 'danger'
-}
-
-MESSAGE_STORAGE = 'messages_extends.storages.FallbackStorage'
 
 # reading .env file
 environ.Env.read_env()
 
 # login redirect
-LOGIN_REDIRECT_URL = '/library/login'
+LOGIN_REDIRECT_URL = '/login'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +31,7 @@ env = environ.Env(
     # set casting, default value
     # DEBUG=(bool, True)
 )
+
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -57,16 +51,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'library.apps.LibraryConfig',
-    'bootstrap4',
-    'django_extensions',
-    'notifications',
-    'channels',
     'rest_framework_datatables',
     'rest_framework_datatables_editor',
-    'messages_extends',
-    #'library.utils.add_songs',
-    #'library.utils.test_run',
-    #'library.utils.detection_music',
+    'bootstrap4',
+    'django_extensions',
+    'channels',
 ]
 
 MIDDLEWARE = [

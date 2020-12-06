@@ -184,6 +184,16 @@
                 </form>
               </div>
             </div>
+            <div class="row">
+              <div class="card-body border rounded border-warning shadow col text-center" style="width:10rem;text-align: left;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
+                <h4 class="card-title">Apply all musiquarium edits?</h4>
+                <p class="card-text">By selecting this option, you will be applying all of the edits seen on the musiquarium library page to the source media.</p>
+                <form method="POST">
+                  {% csrf_token %}
+                  <button class="btn btn-primary" type="submit" name="apply" id="apply" style="background: #eda04f;">Button</button>
+                </form>
+              </div>
+            </div>
             <div class="row text-center">
               <div class="card-body border rounded border-warning shadow col text-center" style="width:10rem;text-align: center;margin: 0 auto;float: none;margin-bottom: 2rem;margin-top: 2rem;margin-left:2rem;margin-right:2rem">
                 <div class="card-body">

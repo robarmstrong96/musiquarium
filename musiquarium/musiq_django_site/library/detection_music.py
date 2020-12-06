@@ -1,14 +1,14 @@
-import acoustid
 import chromaprint
 import os
 import sys
 import environ
 import logging
 import discogs_client
-import musicbrainzngs
 import json
 import oauth2 as oauth
 import music_tag
+import musicbrainzngs
+import acoustid
 from ratelimiter import RateLimiter
 from discogs_client.exceptions import HTTPError
 from enum import Enum, unique
@@ -130,8 +130,8 @@ def _musicbrainz_match(file_dir, API_KEY):
     """
     song_metadata = []
     try:
-        for score, recording_id, title, artist in acoustid.match(API_KEY, file_dir, parse=True):
-            # logger.info(title)
+        for score, recording_id, title, artist in acoustid.match(API_KEY, file_dir):
+            logger.info(f"Title: {title} and API KEY: {API_KEY}")
             list = [('score', score), ('recording_id', recording_id), ('title', title),
                     ('artists', dict([('artist', artist)])), ('albums', dict(
                         [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),
@@ -403,8 +403,8 @@ def _discogs_retrieval(song_metadata, match, user):
                 song_metadata['song']['albums'] = dict([('albums', release_list)])
                 # attempts to add song metadata to musiquarium database
                 add_song_discogs(song_metadata, user, image_path)
-    except:
-        logger.error("Error obtaining discogs information")
+    except Exception as e:
+        logger.error(f"Error obtaining discogs information: {e}")
 
 
 def discogs_create_new_client(user):
