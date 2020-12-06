@@ -31,6 +31,7 @@ logger = logging.getLogger("mylogger")
 """
 
 @login_required(login_url='/library/login_user')
+@csrf_exempt
 def index(request):
     """View function for home page of site."""
 
