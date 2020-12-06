@@ -44,10 +44,10 @@ apt install python3
 ```
 * pip3
 * VirtualEnv (might be able to be installed using pip)
-* PostgreSQL (subject to change)
+* FFmpeg
 
 ### General Installation Instructions
-##### (This will be automated [to some extent] in the future)
+<-- ##### (This will be automated [to some extent] in the future) -->
 
 Once again, these instructions are not ready yet (placeholder)
 1. Clone the repo
