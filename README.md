@@ -33,68 +33,55 @@ This web application will be capable of what most music library managers can do,
 <!-- GETTING STARTED -->
 ## Getting Started
 
-The detailed setup process for testing this project is not officially ready yet, but should be doable with some tweaking.
+This project was developed on the most recent version of ubuntu, 20.04/10. This is not guaranteed to work on other linux distributions but may be possible with some minor tweaks.
 
 ### Prerequisites
 
-In a linux environment (we'll use ubuntu with the apt package manger as an example), you will need:
-* python3
+In a linux environment (we'll use ubuntu with the apt package manger as an example since that is what I've developed this application on), you will need:
+* python3.8
 ```sh
-apt install python3
+[sudo] apt install python3
 ```
 * pip3
 * VirtualEnv (might be able to be installed using pip)
 * FFmpeg
 
-### General Installation Instructions
-<-- ##### (This will be automated [to some extent] in the future) -->
+and several more apt/debian/ubuntu packages and PyPi packages. Thankfully, there is an included script which acquires and installs all of the packages needed to run musiquarium.
 
-Once again, these instructions are not ready yet (placeholder)
+### General Installation Instructions
+
 1. Clone the repo
 ```sh
 git clone https://github.com/robarmstrong96/musiquarium
 ```
-2. Install packages/prerequisites
-3. Setup VirtualEnv
+2. Execute the 'setup.sh' (using 'sudo setup.sh') script located in the git project directory. If the script is not executable, run
 ```sh
-python3 -m virtualenv <name_of_temp_venv>
+[sudo] chmod +x ./script.sh
 ```
-or
+This should take a while as several libraries need to be downloaded to properly run musiquarium.
+3. Before starting the server (and assuming the automated process finished successfully), you will need to activate the python environment manually. You can do this by simply entering the commands
 ```sh
-python -m virtualenv <name_of_temp_venv>
+source ./musiq_packages/bin/activate
 ```
-4. Activate previously created virtual environment, i.e.
-```sh
-source <venv_folder>/bin/activate in shell
-```
-5. Install python requirements with the 'requirements.txt' file
-```sh
-pip3 install -r requirements.txt
-```
-or
-```sh
-pip install -r requirements.txt
-```
-6. go to the directory which contains 'manage.py' (this should be in ./musiquarium/musiq_django_site/manage.py if starting from the root git project directory)
-7. in the settings.py file which should be in the musiq_django_site project directory, use https://miniwebtool.com/django-secret-key-generator/ to generate a secret key for django to use when hosting the website. Set 'SECRET_KEY' in settings.py with your newly generated django secret key from the previously mentioned website.
-8. assuming postgresql has been installed correctly, you should run
-```sh
-python3 manage.py makemigrations
-```
-```sh
-python3 manage.py migrate
-```
-and finally
-```sh
-python3 manage.py runserver
-```
-which makes the site viewable on the localhost port 8000, so http://127.0.0.1:8000
+from the git project directory. From there, you can run the server.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-To test with preset music, change the 'no_metadata_media' folder to 'media' (in the same directory!) and click the organize button on the 'library' page
+To manually run the server, you should be able to use the command (making sure to replace the [ip address] with the address you wish to host the site from and the [port] you wish to communicate on. By default, 'runserver --insecure' will run on the localhost and port 8000; this is recommended if using musiquarium for the first time and are accessing the site ONLY from the device it is running on)
+```sh
+python3 mange.py runserver --insecure [ip address]:[port]
+```
+
+Once you've got the site running correctly and visit whatever address specified in the step above, you will be directed to create an account or login. Create an account (if it doesn't redirect you to the actual site, you entered some information incorrectly. Try again.).
+
+Once logging in, you can begin following the instructions on the main page of musiquarium to begin analyzing and editing your media library collection. Keep in mind that the larger the library, the longer musiquarium may take to run. Audio fingerprinting, communicating with music database sites, etc..., takes a long time.
+
+Once musiquarium has finished processing the specified library, you can view the songs that musiquarium has processed on the table page. You can make edits to CERTAIN metadata fields by simply double clicking it and typing in the desired value. Once finished, you can apply metadata edits from the Profile page.
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 * [Font Awesome](https://fontawesome.com)
+* [MusicBrainz](https://musicbrainz.org/)
+* [ARCcloud](https://www.acrcloud.com/)
+* [Discogs](https://www.discogs.com/)
