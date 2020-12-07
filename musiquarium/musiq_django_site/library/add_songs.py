@@ -72,9 +72,9 @@ def __musicbrainz_album_cover_grab(release, id):
         # download release image in binary data and write to file
         logger.info(id)
         release_cover_binary = musicbrainzngs.get_image_front(id)
-        with open(f"./assets/img/album_artwork/{release} - {id}.png", "wb")  as image:
+        with open(f"../assets/img/album_artwork/{release} - {id}.png", "wb")  as image:
             image.write(release_cover_binary)  # Write binary data to release id file
-            return f"./assets/img/album_artwork/{release} - {id}.png"
+            return f"../assets/img/album_artwork/{release} - {id}.png"
     except Exception as e:
         logger.error(f"\t[Unable to get cover art for {release}!: {e}]")
         return default_image

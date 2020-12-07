@@ -68,10 +68,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SECURE_SSL_REDIRECT = False
-
-CSRF_COOKIE_SECURE = False
-
 ROOT_URLCONF = 'musiq_django_site.urls'
 
 REST_FRAMEWORK = {

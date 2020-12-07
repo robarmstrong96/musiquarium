@@ -115,13 +115,14 @@
                       <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='release_date'>{{ song.release_date }}</td>
                       <td class='editable' data-id="{{ song.file_location }}" style="text-align:center; vertical-align: middle" data-type='genre'>{{ song.genre }}</td>
                       <td style="text-align:center; vertical-align: middle; word-wrap: break-word;">
-                        <form method="POST">
-                          <label for="image" name="original_image" value="old_image">
-                            {% csrf_token %}
-                            <img name="original_image" id="old_image" value="old_image" class="rounded float-left center" style="text-align:center; vertical-align: middle; height:4rem; width:4rem; max-width:256px; max-height:256px;" src=" {{ song.album_artwork }}" />
-                            <input type="file" name="image" id="image" value="{{ song.file_location }}" style="display:none;" onchange="submit();" />
-                          </label>
-                        </form>
+                        <!--form method="POST">
+                          <label for="image" name="original_image" value="old_image"-->
+                        {% csrf_token %}
+                        {{ song.album_artwork }}
+                        <!--img name="original_image" id="old_image" value="old_image" class="rounded float-left center" style="text-align:center; vertical-align: middle; height:4rem; width:4rem; max-width:256px; max-height:256px;" src="{{ song.album_artwork }}" /-->
+                            <!--input type="file" name="image" id="image" value="{{ song.file_location }}" style="display:none;" onchange="submit();" /-->
+                          <!--/label>
+                        </form-->
                       </td>
                       <td style="text-align:center; vertical-align: middle; word-wrap: break-word;" data-type='genre'>{{ song.file_location }}</td>
                       <form method="POST">

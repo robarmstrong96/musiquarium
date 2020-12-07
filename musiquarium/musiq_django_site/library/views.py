@@ -1,6 +1,5 @@
 import os
 import sys
-import psycopg2
 import logging
 import pathlib
 import discogs_client
@@ -53,10 +52,10 @@ def index(request):
 
     # starts bulk user music library initialization
     if request.method == 'POST' and 'match' in request.POST and 'metadata' in request.POST and 'file' in request.POST:
-        #import_daemon = BulkImport(request, request.user, init_bulk_detect)
-        #import_daemon.daemon = True
-        #import_daemon.start()
-        _bulk_import(request, init_bulk_detect, request.user)
+        import_daemon = BulkImport(request, request.user, init_bulk_detect)
+        import_daemon.daemon = True
+        import_daemon.start()
+        #_bulk_import(request, init_bulk_detect, request.user)
         #match = init_bulk_detect['match']
         #metadata = init_bulk_detect['metadata']
         #message = f'The bulk import using detection method {match} and the {metadata} database has started.'
@@ -142,12 +141,11 @@ def profile(request):
 
 @login_required(login_url='/library/login_user')
 def table(request):
-
+    """ table html request """
     if request.method == 'POST' and 'delete-song' in request.POST:
         song_instance = Song.objects.filter(profile=request.user.profile, file_location=request.POST['delete-song'])
         song_instance.delete()
 
-    """ table html request """
     song_list = Song.objects.filter(profile=request.user.profile)
 
     return render(request, 'table.html', {'page_obj': song_list,
