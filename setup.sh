@@ -24,4 +24,4 @@ pip3 install -r requirements.txt
 python3 ./musiquarium/musiq_django_site/manage.py makemigrations
 python3 ./musiquarium/musiq_django_site/manage.py migrate
 python3 ./musiquarium/musiq_django_site/manage.py collectstatic
-chmod -R 664 ./musiquarium
+chmod -R 777 ./musiquarium
