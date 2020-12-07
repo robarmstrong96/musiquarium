@@ -4,6 +4,7 @@ attrs==19.3.0
 audioread==2.1.8
 autobahn==20.7.1
 Automat==0.8.0
+beautifulsoup4==4.9.2
 bleach==3.2.1
 blinker==1.4
 certifi==2020.6.20
@@ -22,6 +23,7 @@ deprecation==2.1.0
 discogs-client==2.3.0
 distlib==0.3.1
 distro==1.4.0
+distro-info===0.23ubuntu1
 Django==3.1.1
 django-bootstrap4==2.2.0
 django-composite-foreignkey==1.1.0
@@ -86,9 +88,9 @@ pyparsing==2.4.7
 pyrsistent==0.15.5
 pyserial==3.4
 pytaglib==1.4.6
-python-apt==0.7.8
+python-apt==2.0.0+ubuntu0.20.4.1
 python-dateutil==2.8.1
-python-debian===0.1.38
+python-debian===0.1.36ubuntu1
 pytz==2020.1
 PyYAML==5.3.1
 ratelimiter==1.2.0.post0
