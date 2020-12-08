@@ -95,9 +95,15 @@ def profile(request):
     # deletes library information associated with user profile
     if request.method == "POST" and 'delete' in request.POST:
         # logger.info(f"Deleting all entries for profile {request.user.profile}")
-        Song.objects.filter(profile=request.user.profile).delete()
+        songs = Song.objects.filter(profile=request.user.profile)
+        for song in songs:
+            if os.path.exists(os.path.abspath(song.album_artwork.__str__())):
+                os.remove(os.path.abspath(song.album_artwork.__str__()))
+            song.delete()
+
         #messages.add_message(request, constants_messages.SUCCESS, "Musiquarium library information successfully deleted.")
 
+    # apply metadata edits
     if request.method == "POST" and 'apply' in request.POST:
         logger.info("Scanningf...")
         save_metadata(request)
