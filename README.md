@@ -68,9 +68,9 @@ from the git project directory. From there, you can run the server.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-To manually run the server, you should be able to use the command (making sure to replace the [ip address] with the address you wish to host the site from and the [port] you wish to communicate on. By default, 'runserver --insecure' will run on the localhost and port 8000; this is recommended if using musiquarium for the first time and are accessing the site ONLY from the device it is running on)
+To manually run the server, you should be able to use the command (making sure to replace the [ip address] with the address you wish to host the site from and the [port] you wish to communicate on. By default, 'runserver' will run on the localhost and port 8000; this is recommended if using musiquarium for the first time and are accessing the site ONLY from the device it is running on)
 ```sh
-python3 mange.py runserver --insecure [ip address]:[port]
+python3 mange.py runserver [ip address]:[port]
 ```
 
 Once you've got the site running correctly and visit whatever address specified in the step above, you will be directed to create an account or login. Create an account (if it doesn't redirect you to the actual site, you entered some information incorrectly. Try again.).
@@ -83,5 +83,7 @@ Once musiquarium has finished processing the specified library, you can view the
 ## Acknowledgements
 * [Font Awesome](https://fontawesome.com)
 * [MusicBrainz](https://musicbrainz.org/)
-* [ARCcloud](https://www.acrcloud.com/)
+* [ACRCloud](https://www.acrcloud.com/)
 * [Discogs](https://www.discogs.com/)
+* [Mutagen](https://mutagen.readthedocs.io/en/latest/)
+* [FFmpeg](https://ffmpeg.org/)
