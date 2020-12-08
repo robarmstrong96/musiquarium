@@ -131,7 +131,6 @@ def _musicbrainz_match(file_dir, API_KEY):
     song_metadata = []
     try:
         for score, recording_id, title, artist in acoustid.match(API_KEY, file_dir):
-            logger.info(f"Title: {title} and API KEY: {API_KEY}")
             list = [('score', score), ('recording_id', recording_id), ('title', title),
                     ('artists', dict([('artist', artist)])), ('albums', dict(
                         [('album', 'Unknown'), ('album_musicbrains_id', "N/A"), ('release_date', "Unknown")])),

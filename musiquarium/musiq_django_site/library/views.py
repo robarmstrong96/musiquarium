@@ -105,7 +105,6 @@ def profile(request):
 
     # apply metadata edits
     if request.method == "POST" and 'apply' in request.POST:
-        logger.info("Scanningf...")
         save_metadata(request)
 
     # sets profile avatar image
@@ -212,37 +211,42 @@ def _bulk_import(request, init_dict, user):
     database_limiter = RateLimiter(max_calls=1, period=3)
     matched_songs = []  # songs that have been matched
 
-    # try:
-    # rate limiter used for limiting api calls to the matcher api
-    if (init_dict['match'] == Detection.MUSICBRAINZS):
-        match_limiter = RateLimiter(max_calls=3, period=1)
+    try:
+        # rate limiter used for limiting api calls to the matcher api
+        if (init_dict['match'] == Detection.MUSICBRAINZS):
+            match_limiter = RateLimiter(max_calls=3, period=1)
 
-    # rate limiter used for limiting api calls to the database api
-    if (init_dict['metadata'] == Database.MUSICBRAINZ):
-        database_limiter = RateLimiter(max_calls=3, period=1)
+        # rate limiter used for limiting api calls to the database api
+        if (init_dict['metadata'] == Database.MUSICBRAINZ):
+            database_limiter = RateLimiter(max_calls=3, period=1)
 
-    if (init_dict['metadata'] == Database.DISCOGS):
-        database_limiter = RateLimiter(max_calls=60, period=58)
+        if (init_dict['metadata'] == Database.DISCOGS):
+            database_limiter = RateLimiter(max_calls=60, period=58)
 
-    # 1) obtains files and enum values based on given media directory and
-    # given sting values representing matching methods/databases.
-    matching, database, files = directory_scan(init_dict['match'],
-                                               init_dict['metadata'], init_dict['file_dir'])
+        # 1) obtains files and enum values based on given media directory and
+        # given sting values representing matching methods/databases.
+        matching, database, files = directory_scan(init_dict['match'],
+                                                   init_dict['metadata'], init_dict['file_dir'])
 
-    # 2) matches the detected songs with preffered matching methodology
-    # logger.info("Matching songs...")
-    for file in files:
-        with match_limiter:
-            matched_songs.append(musiq_match_song(matching, file))
+        # 2) matches the detected songs with preffered matching methodology
+        # logger.info("Matching songs...")
+        for file in files:
+            with match_limiter:
+                logger.info(f"matching given song...")
+                matched_songs.append(musiq_match_song(matching, file))
+                logger.info(f"done matching.")
 
-    # 3) retrieves song metadata from specified database
-    # logger.info("Retrieving metadata...")
-    for match in matched_songs:
-        with database_limiter:
-            musiq_retrieve_song(match, database, matching, user)
+        # 3) retrieves song metadata from specified database
+        # logger.info("Retrieving metadata...")
+        for match in matched_songs:
+            with database_limiter:
+                logger.info(f"gathering song information and adding to database...")
+                musiq_retrieve_song(match, database, matching, user)
+                logger.info(f"done adding song.")
+        logger.info("musiquarium has successfully finshed analyzing the media files in the given directory.")
 
-    # except Exception as e:
-    #    logger.error(f"Error during main bulk import: {e}")
+    except Exception as e:
+        logger.error(f"Error during main bulk import process: {e}")
 
 
 def logout(request):

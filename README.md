@@ -56,9 +56,10 @@ git clone https://github.com/robarmstrong96/musiquarium
 ```
 2. Execute the 'setup.sh' (using 'sudo setup.sh') script located in the git project directory. If the script is not executable, run
 ```sh
-[sudo] chmod +x ./script.sh
+[sudo] chmod +x ./setup.sh
 ```
 This should take a while as several libraries need to be downloaded to properly run musiquarium.
+
 3. Before starting the server (and assuming the automated process finished successfully), you will need to activate the python environment manually. You can do this by simply entering the commands
 ```sh
 source ./musiq_packages/bin/activate

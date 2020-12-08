@@ -38,13 +38,11 @@ def add_song_musicbrainz(song_metadata, user):
         else:
             new.save()
                 #logger.info("Old song, updating...")
-            #logger.info("Done.")
     except Exception as e:
        logger.error(f"Error while adding musicbrainz song instance to database: {e}")
 
 def _determine_first_release(albums):
     releases = []
-    #logger.info(albums)
     album = None
     release_date = None
     for album in albums.values():
@@ -70,7 +68,6 @@ def __musicbrainz_album_cover_grab(release, id):
     musicbrainzngs.set_useragent('musiquarium', '0.1', 'robert.armstrong.18@cnu.edu')
     try:
         # download release image in binary data and write to file
-        logger.info(id)
         release_cover_binary = musicbrainzngs.get_image_front(id)
         with open(f"./assets/img/album_artwork/{release} - {id}.png", "wb")  as image:
             image.write(release_cover_binary)  # Write binary data to release id file
