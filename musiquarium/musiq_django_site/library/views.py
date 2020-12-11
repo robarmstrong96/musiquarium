@@ -52,10 +52,10 @@ def index(request):
 
     # starts bulk user music library initialization
     if request.method == 'POST' and 'match' in request.POST and 'metadata' in request.POST and 'file' in request.POST:
-        import_daemon = BulkImport(request, request.user, init_bulk_detect)
-        import_daemon.daemon = True
-        import_daemon.start()
-        #_bulk_import(request, init_bulk_detect, request.user)
+        #import_daemon = BulkImport(request, request.user, init_bulk_detect)
+        #import_daemon.daemon = True
+        #import_daemon.start()
+        _bulk_import(request, init_bulk_detect, request.user)
         #match = init_bulk_detect['match']
         #metadata = init_bulk_detect['metadata']
         #message = f'The bulk import using detection method {match} and the {metadata} database has started.'
@@ -233,7 +233,10 @@ def _bulk_import(request, init_dict, user):
         for file in files:
             with match_limiter:
                 logger.info(f"matching given song...")
-                matched_songs.append(musiq_match_song(matching, file))
+                try:
+                    matched_songs.append(musiq_match_song(matching, file))
+                except:
+                    logger.error("Error with specific song.")
                 logger.info(f"done matching.")
 
         # 3) retrieves song metadata from specified database
@@ -241,7 +244,10 @@ def _bulk_import(request, init_dict, user):
         for match in matched_songs:
             with database_limiter:
                 logger.info(f"gathering song information and adding to database...")
-                musiq_retrieve_song(match, database, matching, user)
+                try:
+                    musiq_retrieve_song(match, database, matching, user)
+                except:
+                    logger.error("Error retrieving specific song information.")
                 logger.info(f"done adding song.")
         logger.info("musiquarium has successfully finshed analyzing the media files in the given directory.")
 
